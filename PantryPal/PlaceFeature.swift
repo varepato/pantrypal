@@ -14,7 +14,7 @@ struct PlaceFeature {
         var id: UUID
         var name: String
         var items: IdentifiedArrayOf<FoodItem> = []
-        
+        var iconName: String = "shippingbox"
         // UI state for "Add item"
         var isAddingItem = false
         var newItemName = ""

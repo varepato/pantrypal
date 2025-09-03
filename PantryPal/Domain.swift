@@ -27,6 +27,7 @@ struct FoodItem: Identifiable, Equatable {
 struct PlaceSnapshot: Identifiable, Equatable {
     var id: UUID = UUID()
     var name: String
+    var iconName: String = "shippingbox"
     var items: IdentifiedArrayOf<FoodItem> = []
 }
 

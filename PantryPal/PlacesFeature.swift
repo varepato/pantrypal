@@ -15,6 +15,7 @@ struct PlacesFeature {
         var path = StackState<Path.State>()   // navigation stack
         var isAddingPlace = false
         var newPlaceName = ""
+        var newPlaceIcon = "shippingbox"
     }
     
     enum Action: BindableAction, Equatable {
@@ -39,8 +40,14 @@ struct PlacesFeature {
             case .confirmAddPlace:
                 let trimmed = state.newPlaceName.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return .none }
-                state.places.append(.init(id: uuid(), name: trimmed))
+                let newPlace = PlaceFeature.State(
+                  id: uuid(),
+                  name: trimmed,
+                  iconName: state.newPlaceIcon
+                )
+                state.places.append(newPlace)
                 state.newPlaceName = ""
+                state.newPlaceIcon = "shippingbox"
                 state.isAddingPlace = false
                 return .none
                 

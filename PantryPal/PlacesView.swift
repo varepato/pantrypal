@@ -5,6 +5,7 @@
 //  Created by Valery Patrizia Madiedo Gomez on 3/09/25.
 //
 
+import Foundation
 import SwiftUI
 import ComposableArchitecture
 
@@ -13,46 +14,119 @@ struct PlacesView: View {
     init(store: StoreOf<PlacesFeature>) { self.store = store }
     
     var body: some View {
-        NavigationStackStore(self.store.scope(state: \.path, action: \.path)) {
-            List {
-                let placesArray: [PlaceFeature.State] = Array(store.places.elements)
-                
-                ForEach(placesArray, id: \.id) { place in
-                    Button {
-                        store.path.append(.place(place))
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: place.iconName)
-                                .imageScale(.large)
-                                .frame(width: 28, height: 28)
-                            Text(place.name)
-                            Spacer()
-                            Text("\(place.items.count)")
-                                .foregroundStyle(.secondary)
-                        }
+        // Break type inference: create the nav store up front
+        let navStore: Store<StackState<PlacesFeature.Path.State>, StackAction<PlacesFeature.Path.State, PlacesFeature.Path.Action>> =
+        store.scope(state: \.path, action: \.path)
+        
+        NavigationStackStore(navStore) {
+            // content
+            PlacesGrid(
+                places: Array(store.places.elements),
+                onTap: { place in
+                    store.path.append(.place(place))
+                },
+                onDelete: { id in
+                    if let idx = store.places.firstIndex(where: { $0.id == id }) {
+                        store.send(.deletePlaces(IndexSet(integer: idx)))
                     }
                 }
-                .onDelete { indexSet in store.send(.deletePlaces(indexSet)) }
-            }
+            )
             .navigationTitle("Places")
             .toolbar {
-                Button { store.send(.addPlaceButtonTapped) } label: { Image(systemName: "plus") }
-                    .accessibilityLabel("Add Place")
-            }
-            .sheet(isPresented: $store.isAddingPlace) {
-                AddPlaceSheet(
-                    name: $store.newPlaceName,
-                    iconName: $store.newPlaceIcon,    // <— Bind to state
-                    isPresented: $store.isAddingPlace,
-                    onConfirm: { store.send(.confirmAddPlace) }
-                )
+                Button { store.send(.addPlaceButtonTapped) } label: {
+                    Image(systemName: "plus")
+                }
             }
         } destination: { state in
             switch state {
             case .place:
-                CaseLet(/PlacesFeature.Path.State.place,
-                         action: PlacesFeature.Path.Action.place,
-                         then: PlaceView.init(store:))
+                CaseLet(
+                    /PlacesFeature.Path.State.place,
+                     action: PlacesFeature.Path.Action.place,
+                     then: PlaceView.init(store:)
+                )
+            }
+        }
+        // keep the sheet outside the NavigationStackStore closure
+        .sheet(isPresented: $store.isAddingPlace) {
+            AddPlaceSheet(
+                name: $store.newPlaceName,
+                iconName: $store.newPlaceIcon,
+                isPresented: $store.isAddingPlace,
+                onConfirm: { store.send(.confirmAddPlace) }
+            )
+        }
+    }
+}
+
+private struct PlacesGrid: View {
+    let places: [PlaceFeature.State]
+    let onTap: (PlaceFeature.State) -> Void
+    let onDelete: (PlaceFeature.State.ID) -> Void
+    
+    // explicit columns to help the type-checker
+    private let columns: [GridItem] = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+    
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(places, id: \.id) { place in
+                    PlaceCard(
+                        place: place,
+                        onTap: { onTap(place) },
+                        onDelete: { onDelete(place.id) }
+                    )
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 12)
+        }
+    }
+}
+
+private struct PlaceCard: View {
+    let place: PlaceFeature.State
+    let onTap: () -> Void
+    let onDelete: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                Image(systemName: place.iconName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .padding(.top, 12)
+                    .tint(Color.accentColor)
+                
+                Text(place.name)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                
+                Text("\(place.items.count) items")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, 12)
+            }
+            .frame(maxWidth: .infinity, minHeight: 120) // consistent card height
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.secondarySystemBackground))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color(.separator), lineWidth: 0.5)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button(role: .destructive) { onDelete() } label: {
+                Label("Delete", systemImage: "trash")
             }
         }
     }
@@ -92,6 +166,7 @@ private struct AddPlaceSheet: View {
         "cup.and.saucer",
         "carrot",
         "leaf",
+        "snowflake",
         
         // Generic / utility
         "tag",
@@ -160,3 +235,4 @@ private struct IconPicker: View {
         .padding(.vertical, 4)
     }
 }
+

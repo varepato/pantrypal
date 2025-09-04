@@ -32,6 +32,9 @@ struct PlacesView: View {
                 }
             )
             .navigationTitle("Places")
+            .task {
+               store.send(.loadRequested)
+            }
             .toolbar {
                 Button { store.send(.addPlaceButtonTapped) } label: {
                     Image(systemName: "plus")

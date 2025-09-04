@@ -21,6 +21,18 @@ struct PlaceFeature {
         var newItemQty = 1
         var newItemNotes = ""
         var newItemExpiry: Date? = nil
+        
+        init(
+            id: UUID,
+            name: String,
+            iconName: String,
+            items: IdentifiedArrayOf<FoodItem> = []
+        ) {
+            self.id = id
+            self.name = name
+            self.iconName = iconName
+            self.items = items
+        }
     }
     
     enum Action: BindableAction, Equatable {

@@ -4,35 +4,76 @@
 //
 //  Created by Valery Patrizia Madiedo Gomez on 3/09/25.
 //
+
+import Foundation
 import SwiftUI
 import ComposableArchitecture
 
 @Reducer
 struct PlacesFeature {
+    
+    // MARK: - State
     @ObservableState
     struct State: Equatable {
+        // Data
         var places: IdentifiedArrayOf<PlaceFeature.State> = []
-        var path = StackState<Path.State>()   // navigation stack
+        
+        // Navigation
+        var path = StackState<Path.State>()
+        
+        // Add-Place sheet UI
         var isAddingPlace = false
         var newPlaceName = ""
-        var newPlaceIcon = "shippingbox"
+        var newPlaceIcon = "shippingbox"   // <- selected icon for new place
     }
     
+    // MARK: - Action
     enum Action: BindableAction, Equatable {
+        // Bindings for sheet fields
         case binding(BindingAction<State>)
+        
+        // UX
         case addPlaceButtonTapped
         case confirmAddPlace
         case deletePlaces(IndexSet)
+        
+        // Persistence / lifecycle
+        case loadRequested
+        case loadSucceeded([PlaceFeature.State])
+        case loadFailed
+        
+        // Navigation (child routes)
         case path(StackAction<Path.State, Path.Action>)
     }
     
+    // MARK: - Dependencies
     @Dependency(\.uuid) var uuid
+    @Dependency(\.db) var db   // <- from DBClient.swift
     
+    // MARK: - Reducer
     var body: some ReducerOf<Self> {
         BindingReducer()
         
-        Reduce { state, action in
+        Reduce<PlacesFeature.State, PlacesFeature.Action> { state, action in
             switch action {
+            case .loadRequested:
+                return .run { send in
+                    do {
+                        let places = try await db.load()
+                        await send(.loadSucceeded(places))
+                    } catch {
+                        await send(.loadFailed)
+                    }
+                }
+                
+            case let .loadSucceeded(places):
+                state.places = .init(uniqueElements: places)
+                return .none
+                
+            case .loadFailed:
+                // optionally set an alert; ignore for now
+                return .none
+                // ---- Add place flow
             case .addPlaceButtonTapped:
                 state.isAddingPlace = true
                 return .none
@@ -40,40 +81,60 @@ struct PlacesFeature {
             case .confirmAddPlace:
                 let trimmed = state.newPlaceName.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return .none }
+                
+                // NOTE: order matters if you rely on memberwise init of PlaceFeature.State
+                // If your PlaceFeature.State is declared as: id, name, items, iconName, ...
+                // you must pass 'items' before 'iconName'.
                 let newPlace = PlaceFeature.State(
-                  id: uuid(),
-                  name: trimmed,
-                  iconName: state.newPlaceIcon
+                    id: uuid(),
+                    name: trimmed,
+                    iconName: state.newPlaceIcon,
+                    items: []
                 )
+                
                 state.places.append(newPlace)
+                
+                // reset sheet fields
                 state.newPlaceName = ""
                 state.newPlaceIcon = "shippingbox"
                 state.isAddingPlace = false
-                return .none
                 
-            case let .deletePlaces(offsets):
-                for index in offsets {
-                    let id = state.places[index].id
+                // persist snapshot
+                let snapshot = Array(state.places)
+                return .run { _ in
+                    try await db.replaceAll(snapshot)
+                }
+                
+                // ---- Delete place (from grid context menu or elsewhere)
+            case let .deletePlaces(indexSet):
+                for i in indexSet {
+                    let id = state.places[i].id
                     _ = state.places.remove(id: id)
                 }
+                let snapshot = Array(state.places)
+                return .run { _ in
+                    try await db.replaceAll(snapshot)
+                }
+                
+                // ---- Keep parent in sync with child updates (items added/edited)
+            case let .path(.element(id: _, action: .place(.delegate(.updated(child))))):
+                state.places[id: child.id] = child
+                let snapshot = Array(state.places)
+                return .run { _ in
+                    try await db.replaceAll(snapshot)
+                }
+                
+            case .path:
                 return .none
                 
             case .binding:
                 return .none
-                
-            case let .path(.element(id: _, action: .place(.delegate(.updated(child))))):
-                // keep the root list in sync with child edits
-                state.places[id: child.id] = child
-                return .none
-                
-            case .path:
-                return .none
             }
         }
-        .forEach(\.path, action: \.path) { Path() } // wire children
+        .forEach(\.path, action: \.path) { Path() }
     }
     
-    // MARK: - Destinations in the stack
+    // MARK: - Navigation destinations
     @Reducer
     struct Path {
         @ObservableState
@@ -88,4 +149,3 @@ struct PlacesFeature {
         }
     }
 }
-

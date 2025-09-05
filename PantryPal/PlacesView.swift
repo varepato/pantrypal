@@ -31,9 +31,10 @@ struct PlacesView: View {
                     }
                 }
             )
-            .navigationTitle("Places")
+            .navigationTitle("Pantry Pal")
             .task {
-               store.send(.loadRequested)
+                store.send(.loadRequested)
+                store.send(.requestNotificationPermission)
             }
             .toolbar {
                 Button { store.send(.addPlaceButtonTapped) } label: {
@@ -77,8 +78,12 @@ private struct PlacesGrid: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(places, id: \.id) { place in
+                    let hasExpired = place.items.elements.contains { ($0.daysUntilExpiry ?? 1) < 0 }
+                    let hasExpiringSoon = place.items.elements.contains { isExpiringSoon(expiration: $0.expirationDate, within: 3) }
                     PlaceCard(
                         place: place,
+                        hasExpiringSoon: hasExpiringSoon,
+                        hasExpired: hasExpired,
                         onTap: { onTap(place) },
                         onDelete: { onDelete(place.id) }
                     )
@@ -88,10 +93,22 @@ private struct PlacesGrid: View {
             .padding(.top, 12)
         }
     }
+    
+    public func daysUntil(_ date: Date?) -> Int? {
+        guard let date else { return nil }
+        return Calendar.current.dateComponents([.day], from: Date(), to: date).day
+    }
+    
+    public func isExpiringSoon(expiration: Date?, within days: Int = 3) -> Bool {
+        guard let d = daysUntil(expiration) else { return false }
+        return d >= 0 && d <= days
+    }
 }
 
 private struct PlaceCard: View {
     let place: PlaceFeature.State
+    let hasExpiringSoon: Bool
+    let hasExpired: Bool
     let onTap: () -> Void
     let onDelete: () -> Void
     
@@ -125,6 +142,15 @@ private struct PlaceCard: View {
                             .stroke(Color(.separator), lineWidth: 0.5)
                     )
             )
+            .overlay(alignment: .topTrailing) {
+                if hasExpired || hasExpiringSoon {
+                    Circle()
+                        .fill(hasExpired ? Color.red : Color.orange)
+                        .frame(width: 10, height: 10)
+                        .offset(x: -8, y: 8)
+                        .accessibilityLabel(hasExpired ? "Has expired items" : "Has expiring items")
+                }
+            }
         }
         .buttonStyle(.plain)
         .contextMenu {

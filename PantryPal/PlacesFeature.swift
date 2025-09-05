@@ -44,11 +44,16 @@ struct PlacesFeature {
         
         // Navigation (child routes)
         case path(StackAction<Path.State, Path.Action>)
+        
+        // Permissions
+        case requestNotificationPermission
+        case notificationPermissionResponse(Bool)
     }
     
     // MARK: - Dependencies
     @Dependency(\.uuid) var uuid
     @Dependency(\.db) var db   // <- from DBClient.swift
+    @Dependency(\.notifications) var notifications
     
     // MARK: - Reducer
     var body: some ReducerOf<Self> {
@@ -56,6 +61,19 @@ struct PlacesFeature {
         
         Reduce<PlacesFeature.State, PlacesFeature.Action> { state, action in
             switch action {
+            case .requestNotificationPermission:
+                return .run { send in
+                    do {
+                        let granted = try await notifications.requestAuthorization()
+                        await send(.notificationPermissionResponse(granted))
+                    } catch {
+                        await send(.notificationPermissionResponse(false))
+                    }
+                }
+                
+            case .notificationPermissionResponse:
+                return .none
+                
             case .loadRequested:
                 return .run { send in
                     do {
@@ -71,9 +89,8 @@ struct PlacesFeature {
                 return .none
                 
             case .loadFailed:
-                // optionally set an alert; ignore for now
                 return .none
-                // ---- Add place flow
+                
             case .addPlaceButtonTapped:
                 state.isAddingPlace = true
                 return .none
@@ -82,9 +99,6 @@ struct PlacesFeature {
                 let trimmed = state.newPlaceName.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return .none }
                 
-                // NOTE: order matters if you rely on memberwise init of PlaceFeature.State
-                // If your PlaceFeature.State is declared as: id, name, items, iconName, ...
-                // you must pass 'items' before 'iconName'.
                 let newPlace = PlaceFeature.State(
                     id: uuid(),
                     name: trimmed,

@@ -50,6 +50,7 @@ struct PlaceFeature {
     }
     
     @Dependency(\.uuid) var uuid
+    @Dependency(\.notifications) var notifications
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -82,18 +83,67 @@ struct PlaceFeature {
                 state.newItemNotes = ""
                 state.newItemExpiry = nil
                 
-                return Effect<PlaceFeature.Action>.send(.delegate(.updated(state)))
-
+                if let exp = state.items.last?.expirationDate {   // the item you just appended
+                    let item = state.items.last!
+                    let id = "item-\(item.id.uuidString)"
+                    let fire = reminderDate(for: exp, leadDays: 2) // customize lead time
+                    return .merge(
+                        .send(.delegate(.updated(state))),            // keep your existing delegate
+                        .run { _ in
+                            try await notifications.schedule(
+                                id,
+                                "Expiring soon: \(item.name)",
+                                "Expires on \(DateFormatter.localizedString(from: exp, dateStyle: .medium, timeStyle: .none))",
+                                fire
+                            )
+                        }
+                    )
+                }
+                return .send(.delegate(.updated(state)))
+                
             case let .setItemExpiry(id, date):
                 state.items[id: id]?.expirationDate = date
-                return Effect<PlaceFeature.Action>.send(.delegate(.updated(state)))
+                
+                let snapshot = state // capture to send to parent
+                let itemId = "item-\(id.uuidString)"
+                
+                if let exp = date {
+                    let name = state.items[id: id]?.name ?? "Item"
+                    let fire = reminderDate(for: exp, leadDays: 2)
+                    return .merge(
+                        .send(.delegate(.updated(snapshot))),
+                        .run { _ in
+                            // re-schedule (add replaces with same identifier)
+                            try await notifications.schedule(
+                                itemId,
+                                "Expiring soon: \(name)",
+                                "Expires on \(DateFormatter.localizedString(from: exp, dateStyle: .medium, timeStyle: .none))",
+                                fire
+                            )
+                        }
+                    )
+                } else {
+                    // no longer has an expiration → cancel any pending notification
+                    return .merge(
+                        .send(.delegate(.updated(snapshot))),
+                        .run { _ in await notifications.cancel([itemId]) }
+                    )
+                }
                 
             case let .deleteItems(offsets):
-                for index in offsets {
-                    let id = state.items[index].id
+                // collect IDs to cancel
+                let idsToCancel = offsets.compactMap { idx in state.items[safe: idx]?.id.uuidString }
+                    .map { "item-\($0)" }
+                
+                for i in offsets {
+                    let id = state.items[i].id
                     _ = state.items.remove(id: id)
                 }
-                return Effect<PlaceFeature.Action>.send(.delegate(.updated(state)))
+                
+                return .merge(
+                    .send(.delegate(.updated(state))),
+                    .run { _ in await notifications.cancel(idsToCancel) }
+                )
                 
             case let .quantityChanged(id, qty):
                 state.items[id: id]?.quantity = max(0, qty)
@@ -104,4 +154,13 @@ struct PlaceFeature {
             }
         }
     }
+    
+    private func reminderDate(for expiration: Date, leadDays: Int = 2) -> Date {
+      Calendar.current.date(byAdding: .day, value: -leadDays, to: expiration) ?? expiration
+    }
+    
+}
+
+extension RandomAccessCollection {
+  subscript(safe index: Index) -> Element? { indices.contains(index) ? self[index] : nil }
 }

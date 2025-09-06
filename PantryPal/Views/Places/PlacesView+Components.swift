@@ -49,6 +49,7 @@ struct StatusBanner: View {
                         .stroke(Color(.separator), lineWidth: 0.5)
                 )
         )
+        .padding(2)
         .onTapGesture(perform: onTap)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). \(message)")
@@ -153,6 +154,7 @@ struct PlaceCard: View {
                 }
             }
         }
+        .padding(2)
         .buttonStyle(.plain)
         .contextMenu {
             Button(role: .destructive) { onDelete() } label: {

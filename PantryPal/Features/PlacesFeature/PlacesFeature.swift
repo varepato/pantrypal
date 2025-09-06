@@ -134,11 +134,13 @@ struct PlacesFeature {
                 state.newPlaceName = ""
                 state.newPlaceIcon = "shippingbox"
                 state.isAddingPlace = false
+                state.newPlaceColorHex = "#3B82F6"
                 
                 // persist snapshot
                 let snapshot = Array(state.places)
                 return .run { _ in
-                    try await db.replaceAll(snapshot)
+                    do { try await db.replaceAll(snapshot) }
+                    catch { print("DB save failed:", error) }
                 }
                 
                 // ---- Delete place (from grid context menu or elsewhere)

@@ -13,9 +13,6 @@ struct PlaceView: View {
     
     var body: some View {
         List {
-            // Break inference completely: turn IdentifiedArray into a plain Array.
-            let itemsArray: [FoodItem] = Array(store.items.elements)
-            
             ForEach(store.items) { (item: FoodItem) in
                 FoodItemRow(
                     item: item,
@@ -26,13 +23,17 @@ struct PlaceView: View {
                 )
             }
             .onDelete { store.send(.deleteItems($0)) }
-            
+        }
+        .safeAreaInset(edge: .bottom) {
+            HStack {
+                Spacer()
+                AddFAB { store.send(.addItemButtonTapped) }
+                    .padding(.trailing, 24)
+            }
+            .padding(.bottom, 8)   // space above the home indicator
+            .background(.clear)
         }
         .navigationTitle(store.name)
-        .toolbar {
-            Button { store.send(.addItemButtonTapped) } label: { Image(systemName: "plus") }
-                .accessibilityLabel("Add Item")
-        }
         .sheet(isPresented: $store.isAddingItem) {
             AddFoodItemSheet(
                 name: $store.newItemName,
@@ -56,7 +57,7 @@ private struct FoodItemRow: View {
                 // Name + quantity inline
                 HStack(spacing: 8) {
                     Text(item.name).font(.headline)
-                    Text("×\(item.quantity)")
+                    Text("• \(item.quantity)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

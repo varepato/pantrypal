@@ -43,7 +43,7 @@ struct StatusBanner: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color(.secondarySystemBackground))
+                .fill(Color(.systemBackground))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
                         .stroke(Color(.separator), lineWidth: 0.5)
@@ -102,7 +102,6 @@ struct PlacesGrid: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.top, 12)
         }
     }
 }
@@ -176,16 +175,12 @@ struct AddPlaceSheet: View {
         "archivebox",
         "cabinet",
         "tray",
-        "tray.full",
         "air.conditioner.horizontal",
         "frying.pan",
         "refrigerator",
         "sink",
         "oven",
         "popcorn",
-        "door.right.hand.closed",
-        "door.sliding.left.hand.closed",
-        "door.garage.closed",
         
         // Kitchen / food
         "takeoutbag.and.cup.and.straw",
@@ -199,13 +194,6 @@ struct AddPlaceSheet: View {
         "leaf",
         "snowflake",
         
-        // Generic / utility
-        "tag",
-        "barcode.viewfinder",
-        "list.bullet",
-        "list.bullet.clipboard",
-        "square.stack",
-        "square.stack.3d.up"
     ]
     
     
@@ -221,7 +209,7 @@ struct AddPlaceSheet: View {
                     IconPicker(iconName: $iconName, options: iconOptions)
                 }
             }
-            .navigationTitle("New Place")
+            .navigationTitle("Where is the food?")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { isPresented = false }
@@ -267,4 +255,19 @@ struct IconPicker: View {
     }
 }
 
+struct AddFAB: View {
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "plus")
+                .font(.title2).bold()
+                .foregroundColor(.white)
+                .padding(20)
+                .background(Circle().fill(Color(.label)))
+                .foregroundColor(Color(.systemBackground))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add place")
+    }
+}
 

@@ -158,6 +158,28 @@ struct PlacesFeature {
                     try await db.replaceAll(snapshot)
                 }
                 
+            case let .path(.element(id: elementID, action: .expiration(.delegate(.cleanupExpired)))):
+                
+                // Remove all expired items from every place
+                for idx in state.places.indices {
+                    state.places[idx].items.removeAll { item in
+                        let d = item.expirationDate.flatMap {
+                            Calendar.current.dateComponents([.day], from: Date(), to: $0).day
+                        }
+                        return (d ?? 1) < 0
+                    }
+                }
+                
+                // pop the view
+                state.path.pop(from: elementID)
+                
+                // Persist the new snapshot
+                let snapshot = Array(state.places)
+                return .run { _ in
+                    try await db.replaceAll(snapshot)
+                }
+                
+                
             case .path:
                 return .none
                 
@@ -174,12 +196,16 @@ struct PlacesFeature {
         @ObservableState
         enum State: Equatable {
             case place(PlaceFeature.State)
+            case expiration(ExpirationFeature.State)
         }
         enum Action: Equatable {
             case place(PlaceFeature.Action)
+            case expiration(ExpirationFeature.Action)
         }
         var body: some ReducerOf<Self> {
-            Scope(state: \.place, action: \.place) { PlaceFeature() }
+          Scope(state: \.place, action: \.place) { PlaceFeature() }
+          Scope(state: \.expiration, action: \.expiration) { ExpirationFeature() }
         }
     }
 }
+

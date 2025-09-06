@@ -57,10 +57,6 @@ struct AddFoodItemSheet: View {
                         DatePicker("Expires on", selection: expiryBinding, displayedComponents: .date)
                     }
                 }
-                
-                Section("Notes") {
-                    TextField("Optional", text: $notes)
-                }
             }
             .navigationTitle("New Item")
             .toolbar {

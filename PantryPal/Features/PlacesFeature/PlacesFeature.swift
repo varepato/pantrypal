@@ -25,6 +25,7 @@ struct PlacesFeature {
         var isAddingPlace = false
         var newPlaceName = ""
         var newPlaceIcon = "shippingbox"   // <- selected icon for new place
+        var newPlaceColorHex: String = "#3B82F6"
         
         // Banner
         var hideExpiredBannerUntil: Date? = nil
@@ -123,6 +124,7 @@ struct PlacesFeature {
                     id: uuid(),
                     name: trimmed,
                     iconName: state.newPlaceIcon,
+                    colorHex: state.newPlaceColorHex,
                     items: []
                 )
                 

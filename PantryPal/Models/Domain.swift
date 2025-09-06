@@ -7,9 +7,6 @@
 import Foundation
 import ComposableArchitecture
 
-import Foundation
-import ComposableArchitecture
-
 struct FoodItem: Identifiable, Equatable {
     var id: UUID = UUID()
     var name: String
@@ -28,6 +25,7 @@ struct PlaceSnapshot: Identifiable, Equatable {
     var id: UUID = UUID()
     var name: String
     var iconName: String = "shippingbox"
+    var colorHex: String = "#3B82F6"
     var items: IdentifiedArrayOf<FoodItem> = []
 }
 

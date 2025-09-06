@@ -14,14 +14,16 @@ final class PlaceStore {
     var id: UUID
     var name: String
     var iconName: String
+    var colorHex: String
     // delete a place → delete its items
     @Relationship(deleteRule: .cascade, inverse: \FoodItemStore.place)
     var items: [FoodItemStore] = []
     
-    init(id: UUID = UUID(), name: String, iconName: String) {
+    init(id: UUID = UUID(), name: String, iconName: String, colorHex: String) {
         self.id = id
         self.name = name
         self.iconName = iconName
+        self.colorHex = colorHex
     }
 }
 

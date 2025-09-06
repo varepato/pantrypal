@@ -13,16 +13,35 @@ struct PlaceView: View {
     
     var body: some View {
         List {
-            ForEach(store.items) { (item: FoodItem) in
-                FoodItemRow(
-                    item: item,
-                    onQtyChange: { (newQty: Int) in
-                        let id = item.id
-                        store.send(.quantityChanged(id: id, qty: newQty))
-                    }
-                )
+            if store.items.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "carrot")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.secondary)
+                    
+                    Text("No items here")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    
+                    Text("Use the + button to add food.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, minHeight: 200)
+                .padding()
+                .listRowBackground(Color.clear)  // keeps background clean
+            } else {
+                ForEach(store.items) { (item: FoodItem) in
+                    FoodItemRow(
+                        item: item,
+                        onQtyChange: { (newQty: Int) in
+                            let id = item.id
+                            store.send(.quantityChanged(id: id, qty: newQty))
+                        }
+                    )
+                }
+                .onDelete { store.send(.deleteItems($0)) }
             }
-            .onDelete { store.send(.deleteItems($0)) }
         }
         .safeAreaInset(edge: .bottom) {
             HStack {

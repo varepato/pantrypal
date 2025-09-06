@@ -174,7 +174,7 @@ struct AddPlaceSheet: View {
         "shippingbox",
         "archivebox",
         "cabinet",
-        "tray",
+        "tray.2",
         "air.conditioner.horizontal",
         "frying.pan",
         "refrigerator",
@@ -261,7 +261,6 @@ struct AddFAB: View {
         Button(action: action) {
             Image(systemName: "plus")
                 .font(.title2).bold()
-                .foregroundColor(.white)
                 .padding(20)
                 .background(Circle().fill(Color(.label)))
                 .foregroundColor(Color(.systemBackground))

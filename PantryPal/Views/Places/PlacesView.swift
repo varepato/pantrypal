@@ -57,17 +57,35 @@ struct PlacesView: View {
                         )
                     }
                     
-                    // your grid below
-                    PlacesGrid(
-                        places: allPlaces,
-                        onTap: { place in store.path.append(.place(place)) },
-                        onDelete: { id in if let i = store.places.firstIndex(where: { $0.id == id }) {
-                            store.send(.deletePlaces(IndexSet(integer: i)))
-                        }}
-                    )
+                    if store.places.isEmpty {
+                      VStack(spacing: 8) {
+                        Image(systemName: "tray")
+                          .font(.system(size: 50))
+                          .foregroundStyle(.secondary)
+
+                        Text("No places yet")
+                          .font(.headline)
+                          .foregroundStyle(.secondary)
+
+                        Text("Tap the + button to add a place.")
+                          .font(.subheadline)
+                          .foregroundStyle(.secondary)
+                          .multilineTextAlignment(.center)
+                      }
+                      .frame(maxWidth: .infinity, minHeight: 300)
+                      .padding()
+                    } else {
+                        PlacesGrid(
+                            places: allPlaces,
+                            onTap: { place in store.path.append(.place(place)) },
+                            onDelete: { id in if let i = store.places.firstIndex(where: { $0.id == id }) {
+                                store.send(.deletePlaces(IndexSet(integer: i)))
+                            }}
+                        )
+                    }
                 }
                 .padding(.horizontal)
-                .padding(.top, 12)
+                .padding(.top, 24)
             }
             .safeAreaInset(edge: .bottom) {
                 HStack {
@@ -79,7 +97,7 @@ struct PlacesView: View {
                 .background(.clear)
             }
 
-            .navigationTitle("PantryNeat")
+            .navigationTitle("Pantry Neat")
             .task {
                 store.send(.loadRequested)
                 store.send(.requestNotificationPermission)

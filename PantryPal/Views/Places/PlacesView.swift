@@ -79,7 +79,7 @@ struct PlacesView: View {
                 .background(.clear)
             }
 
-            .navigationTitle("Pantry Pal")
+            .navigationTitle("PantryNeat")
             .task {
                 store.send(.loadRequested)
                 store.send(.requestNotificationPermission)

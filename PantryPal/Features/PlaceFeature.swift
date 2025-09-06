@@ -14,6 +14,7 @@ struct PlaceFeature {
         var id: UUID
         var name: String
         var items: IdentifiedArrayOf<FoodItem> = []
+        var colorHex: String = "#3B82F6"
         var iconName: String = "shippingbox"
         // UI state for "Add item"
         var isAddingItem = false
@@ -26,11 +27,13 @@ struct PlaceFeature {
             id: UUID,
             name: String,
             iconName: String,
+            colorHex: String,
             items: IdentifiedArrayOf<FoodItem> = []
         ) {
             self.id = id
             self.name = name
             self.iconName = iconName
+            self.colorHex = colorHex
             self.items = items
         }
     }

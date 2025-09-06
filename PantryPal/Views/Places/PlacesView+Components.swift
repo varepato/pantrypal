@@ -49,6 +49,7 @@ struct StatusBanner: View {
                         .stroke(Color(.separator), lineWidth: 0.5)
                 )
         )
+        .padding(2)
         .onTapGesture(perform: onTap)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). \(message)")
@@ -121,7 +122,7 @@ struct PlaceCard: View {
                     .scaledToFit()
                     .frame(width: 36, height: 36)
                     .padding(.top, 12)
-                    .tint(Color.accentColor)
+                    .foregroundStyle(Color(hex: place.colorHex))
                 
                 Text(place.name)
                     .font(.headline)
@@ -136,12 +137,12 @@ struct PlaceCard: View {
             }
             .frame(maxWidth: .infinity, minHeight: 120) // consistent card height
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.secondarySystemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(.separator), lineWidth: 0.5)
-                    )
+              RoundedRectangle(cornerRadius: 16)
+                .fill(Color(hex: place.colorHex).opacity(0.15))  // 👈 soft tint
+                .overlay(
+                  RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color(hex: place.colorHex), lineWidth: 1)
+                )
             )
             .overlay(alignment: .topTrailing) {
                 if hasExpired || hasExpiringSoon {
@@ -153,6 +154,7 @@ struct PlaceCard: View {
                 }
             }
         }
+        .padding(2)
         .buttonStyle(.plain)
         .contextMenu {
             Button(role: .destructive) { onDelete() } label: {
@@ -166,6 +168,7 @@ struct AddPlaceSheet: View {
     @Binding var name: String
     @Binding var iconName: String
     @Binding var isPresented: Bool
+    @Binding var colorHex: String
     let onConfirm: () -> Void
     
     // A small curated set of useful SF Symbols.
@@ -207,6 +210,16 @@ struct AddPlaceSheet: View {
                 
                 Section("Icon") {
                     IconPicker(iconName: $iconName, options: iconOptions)
+                }
+                Section("Color") {
+                    ColorPicker(
+                        "Card color",
+                        selection: Binding(
+                            get: { Color(hex: colorHex) },
+                            set: { newColor in colorHex = newColor.toHex() ?? colorHex }
+                        ),
+                        supportsOpacity: false
+                    )
                 }
             }
             .navigationTitle("Where is the food?")

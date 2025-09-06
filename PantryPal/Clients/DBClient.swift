@@ -48,6 +48,7 @@ extension DBClient {
                             id: ps.id,
                             name: ps.name,
                             iconName: ps.iconName,
+                            colorHex: ps.colorHex,
                             items: .init(uniqueElements:
                                             ps.items.map {
                                                 FoodItem(
@@ -68,7 +69,12 @@ extension DBClient {
                     let existing = try context.fetch(FetchDescriptor<PlaceStore>())
                     existing.forEach { context.delete($0) }
                     for p in places {
-                        let place = PlaceStore(id: p.id, name: p.name, iconName: p.iconName)
+                        let place = PlaceStore(
+                            id: p.id,
+                            name: p.name,
+                            iconName: p.iconName,
+                            colorHex: p.colorHex
+                        )
                         for it in p.items {
                             place.items.append(
                                 FoodItemStore(

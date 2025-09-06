@@ -116,12 +116,12 @@ struct PlacesView: View {
               }
             }
         }
-        // keep the sheet outside the NavigationStackStore closure
         .sheet(isPresented: $store.isAddingPlace) {
             AddPlaceSheet(
                 name: $store.newPlaceName,
                 iconName: $store.newPlaceIcon,
                 isPresented: $store.isAddingPlace,
+                colorHex: $store.newPlaceColorHex,
                 onConfirm: { store.send(.confirmAddPlace) }
             )
         }

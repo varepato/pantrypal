@@ -28,6 +28,7 @@
 		1A255E012E65E9C9005BA185 /* PantryPalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255E002E65E9C9005BA185 /* PantryPalUITests.swift */; };
 		1A255E032E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */; };
 		1A255E122E65EC4C005BA185 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 1A255E112E65EC4C005BA185 /* ComposableArchitecture */; };
+		1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		1A255DFC2E65E9C9005BA185 /* PantryPalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PantryPalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A255E002E65E9C9005BA185 /* PantryPalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITests.swift; sourceTree = "<group>"; };
 		1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,8 +134,8 @@
 		1A0889ED2E6BC8AD00DE458B /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				1A6377EC2E6CF30200C6AAA2 /* PlacesFeature */,
 				1A0889F82E6BD95200DE458B /* Expiration */,
-				1A0786042E687294008B50DE /* PlacesFeature.swift */,
 				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
 			);
 			path = Features;
@@ -222,6 +224,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1A6377EC2E6CF30200C6AAA2 /* PlacesFeature */ = {
+			isa = PBXGroup;
+			children = (
+				1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */,
+				1A0786042E687294008B50DE /* PlacesFeature.swift */,
+			);
+			path = PlacesFeature;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -369,6 +380,7 @@
 				1A07860D2E6A281B008B50DE /* DBClient.swift in Sources */,
 				1A0889FA2E6BD96D00DE458B /* ExpirationRowBuilder.swift in Sources */,
 				1A0785FF2E687097008B50DE /* Domain.swift in Sources */,
+				1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */,
 				1A0889EF2E6BCC7000DE458B /* ExpirationLogic.swift in Sources */,
 				1A0889F42E6BD5F200DE458B /* ExpirationFeature.swift in Sources */,
 				1A0786072E6872BC008B50DE /* PlacesView.swift in Sources */,
@@ -539,7 +551,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"PantryPal/Preview Content\"";
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
@@ -554,7 +566,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -571,7 +583,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"PantryPal/Preview Content\"";
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
@@ -586,7 +598,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

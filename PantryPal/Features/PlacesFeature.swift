@@ -25,6 +25,10 @@ struct PlacesFeature {
         var isAddingPlace = false
         var newPlaceName = ""
         var newPlaceIcon = "shippingbox"   // <- selected icon for new place
+        
+        // Banner
+        var hideExpiredBannerUntil: Date? = nil
+        var hideExpiringBannerUntil: Date? = nil
     }
     
     // MARK: - Action
@@ -48,6 +52,10 @@ struct PlacesFeature {
         // Permissions
         case requestNotificationPermission
         case notificationPermissionResponse(Bool)
+        
+        // Banner
+        enum BannerKind: Equatable { case expired, expiringSoon }
+        case dismissBanner(BannerKind)
     }
     
     // MARK: - Dependencies
@@ -61,6 +69,18 @@ struct PlacesFeature {
         
         Reduce<PlacesFeature.State, PlacesFeature.Action> { state, action in
             switch action {
+            case let .dismissBanner(kind):
+                let tomorrow = Calendar.current.startOfDay(for: Date()).addingTimeInterval(60*60*24)
+                switch kind {
+                case .expired:
+                    print("hide expired")
+                    state.hideExpiredBannerUntil = tomorrow
+                case .expiringSoon:
+                    print("hide expiring soon")
+                    state.hideExpiringBannerUntil = tomorrow
+                }
+                return .none
+                
             case .requestNotificationPermission:
                 return .run { send in
                     do {

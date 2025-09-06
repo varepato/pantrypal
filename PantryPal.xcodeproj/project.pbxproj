@@ -16,6 +16,8 @@
 		1A07860B2E6A26A8008B50DE /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A07860A2E6A26A0008B50DE /* PersistenceModels.swift */; };
 		1A07860D2E6A281B008B50DE /* DBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A07860C2E6A280D008B50DE /* DBClient.swift */; };
 		1A0889E92E6B587D00DE458B /* NotificationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0889E82E6B587800DE458B /* NotificationClient.swift */; };
+		1A0889EF2E6BCC7000DE458B /* ExpirationLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0889EE2E6BCC6400DE458B /* ExpirationLogic.swift */; };
+		1A0889F12E6BCCEF00DE458B /* PlacesView+Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */; };
 		1A255DE42E65E9C7005BA185 /* PantryPalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255DE32E65E9C7005BA185 /* PantryPalApp.swift */; };
 		1A255DEA2E65E9C9005BA185 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A255DE92E65E9C9005BA185 /* Assets.xcassets */; };
 		1A255DED2E65E9C9005BA185 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A255DEC2E65E9C9005BA185 /* Preview Assets.xcassets */; };
@@ -52,6 +54,8 @@
 		1A07860A2E6A26A0008B50DE /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
 		1A07860C2E6A280D008B50DE /* DBClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBClient.swift; sourceTree = "<group>"; };
 		1A0889E82E6B587800DE458B /* NotificationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationClient.swift; sourceTree = "<group>"; };
+		1A0889EE2E6BCC6400DE458B /* ExpirationLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationLogic.swift; sourceTree = "<group>"; };
+		1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlacesView+Components.swift"; sourceTree = "<group>"; };
 		1A255DE02E65E9C7005BA185 /* PantryPal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PantryPal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A255DE32E65E9C7005BA185 /* PantryPalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalApp.swift; sourceTree = "<group>"; };
 		1A255DE92E65E9C9005BA185 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -101,6 +105,7 @@
 		1A0889EB2E6BC87900DE458B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				1A0889EE2E6BCC6400DE458B /* ExpirationLogic.swift */,
 				1A07860A2E6A26A0008B50DE /* PersistenceModels.swift */,
 				1A0785FE2E68708B008B50DE /* Domain.swift */,
 			);
@@ -110,8 +115,8 @@
 		1A0889EC2E6BC89900DE458B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1A0889F22E6BCD0900DE458B /* Places */,
 				1A0786082E68BAA4008B50DE /* AddFoodItemView.swift */,
-				1A0786062E6872B9008B50DE /* PlacesView.swift */,
 				1A0786022E68726A008B50DE /* PlaceView.swift */,
 			);
 			path = Views;
@@ -124,6 +129,15 @@
 				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		1A0889F22E6BCD0900DE458B /* Places */ = {
+			isa = PBXGroup;
+			children = (
+				1A0786062E6872B9008B50DE /* PlacesView.swift */,
+				1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */,
+			);
+			path = Places;
 			sourceTree = "<group>";
 		};
 		1A255DD72E65E9C7005BA185 = {
@@ -336,8 +350,10 @@
 				1A255DE42E65E9C7005BA185 /* PantryPalApp.swift in Sources */,
 				1A07860D2E6A281B008B50DE /* DBClient.swift in Sources */,
 				1A0785FF2E687097008B50DE /* Domain.swift in Sources */,
+				1A0889EF2E6BCC7000DE458B /* ExpirationLogic.swift in Sources */,
 				1A0786072E6872BC008B50DE /* PlacesView.swift in Sources */,
 				1A0786052E687299008B50DE /* PlacesFeature.swift in Sources */,
+				1A0889F12E6BCCEF00DE458B /* PlacesView+Components.swift in Sources */,
 				1A0889E92E6B587D00DE458B /* NotificationClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

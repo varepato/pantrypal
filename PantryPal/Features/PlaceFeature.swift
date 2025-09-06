@@ -164,3 +164,12 @@ struct PlaceFeature {
 extension RandomAccessCollection {
   subscript(safe index: Index) -> Element? { indices.contains(index) ? self[index] : nil }
 }
+
+extension PlaceFeature.State {
+  func expiredCount() -> Int {
+    items.elements.filter { isExpired($0.expirationDate) }.count
+  }
+  func expiringSoonCount(within days: Int = 3) -> Int {
+    items.elements.filter { isExpiringSoon($0.expirationDate, within: days) }.count
+  }
+}

@@ -1,69 +1,81 @@
 //
-//  PlacesView.swift
+//  PlacesView+Components.swift
 //  PantryPal
 //
-//  Created by Valery Patrizia Madiedo Gomez on 3/09/25.
+//  Created by Valery Patrizia Madiedo Gomez on 5/09/25.
 //
 
-import Foundation
 import SwiftUI
-import ComposableArchitecture
 
-struct PlacesView: View {
-    @Bindable var store: StoreOf<PlacesFeature>
-    init(store: StoreOf<PlacesFeature>) { self.store = store }
+struct StatusBanner: View {
+    enum Kind { case expired, expiringSoon }
+    
+    let kind: Kind
+    let count: Int
+    let onTap: () -> Void
+    let onClose: () -> Void
     
     var body: some View {
-        // Break type inference: create the nav store up front
-        let navStore: Store<StackState<PlacesFeature.Path.State>, StackAction<PlacesFeature.Path.State, PlacesFeature.Path.Action>> =
-        store.scope(state: \.path, action: \.path)
-        
-        NavigationStackStore(navStore) {
-            // content
-            PlacesGrid(
-                places: Array(store.places.elements),
-                onTap: { place in
-                    store.path.append(.place(place))
-                },
-                onDelete: { id in
-                    if let idx = store.places.firstIndex(where: { $0.id == id }) {
-                        store.send(.deletePlaces(IndexSet(integer: idx)))
-                    }
-                }
-            )
-            .navigationTitle("Pantry Pal")
-            .task {
-                store.send(.loadRequested)
-                store.send(.requestNotificationPermission)
+        HStack(alignment: .top, spacing: 12) {
+            Circle()
+                .fill(kind == .expired ? Color.red : Color.orange) 
+                .frame(width: 10, height: 10)
+                .padding(.top, 6)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .toolbar {
-                Button { store.send(.addPlaceButtonTapped) } label: {
-                    Image(systemName: "plus")
-                }
+            
+            Spacer()
+            
+            Button(action: onClose) {
+                Image(systemName: "xmark")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-        } destination: { state in
-            switch state {
-            case .place:
-                CaseLet(
-                    /PlacesFeature.Path.State.place,
-                     action: PlacesFeature.Path.Action.place,
-                     then: PlaceView.init(store:)
-                )
-            }
+            .buttonStyle(.plain)
         }
-        // keep the sheet outside the NavigationStackStore closure
-        .sheet(isPresented: $store.isAddingPlace) {
-            AddPlaceSheet(
-                name: $store.newPlaceName,
-                iconName: $store.newPlaceIcon,
-                isPresented: $store.isAddingPlace,
-                onConfirm: { store.send(.confirmAddPlace) }
-            )
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color(.secondarySystemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color(.separator), lineWidth: 0.5)
+                )
+        )
+        .onTapGesture(perform: onTap)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(message)")
+    }
+    
+    private var title: String {
+        switch kind {
+        case .expired: return "Expired items"
+        case .expiringSoon: return "Expiring soon"
+        }
+    }
+    
+    private var message: String {
+        switch kind {
+        case .expired:
+            return count == 1
+            ? "You have 1 expired item. Yuck! Clean that up!"
+            : "You have \(count) expired items. Yuck! Clean that up!"
+        case .expiringSoon:
+            return count == 1
+            ? "1 item is expiring soon. Go eat it!"
+            : "\(count) items are expiring soon. You better go eat them!"
         }
     }
 }
 
-private struct PlacesGrid: View {
+struct PlacesGrid: View {
     let places: [PlaceFeature.State]
     let onTap: (PlaceFeature.State) -> Void
     let onDelete: (PlaceFeature.State.ID) -> Void
@@ -79,7 +91,7 @@ private struct PlacesGrid: View {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(places, id: \.id) { place in
                     let hasExpired = place.items.elements.contains { ($0.daysUntilExpiry ?? 1) < 0 }
-                    let hasExpiringSoon = place.items.elements.contains { isExpiringSoon(expiration: $0.expirationDate, within: 3) }
+                    let hasExpiringSoon = place.items.elements.contains { isExpiringSoon($0.expirationDate, within: 3) }
                     PlaceCard(
                         place: place,
                         hasExpiringSoon: hasExpiringSoon,
@@ -89,23 +101,13 @@ private struct PlacesGrid: View {
                     )
                 }
             }
-            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
             .padding(.top, 12)
         }
     }
-    
-    public func daysUntil(_ date: Date?) -> Int? {
-        guard let date else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: date).day
-    }
-    
-    public func isExpiringSoon(expiration: Date?, within days: Int = 3) -> Bool {
-        guard let d = daysUntil(expiration) else { return false }
-        return d >= 0 && d <= days
-    }
 }
 
-private struct PlaceCard: View {
+struct PlaceCard: View {
     let place: PlaceFeature.State
     let hasExpiringSoon: Bool
     let hasExpired: Bool
@@ -161,7 +163,7 @@ private struct PlaceCard: View {
     }
 }
 
-private struct AddPlaceSheet: View {
+struct AddPlaceSheet: View {
     @Binding var name: String
     @Binding var iconName: String
     @Binding var isPresented: Bool
@@ -233,7 +235,7 @@ private struct AddPlaceSheet: View {
     }
 }
 
-private struct IconPicker: View {
+struct IconPicker: View {
     @Binding var iconName: String
     let options: [String]
     
@@ -264,4 +266,5 @@ private struct IconPicker: View {
         .padding(.vertical, 4)
     }
 }
+
 

@@ -16,6 +16,8 @@ struct PlaceFeature {
         var items: IdentifiedArrayOf<FoodItem> = []
         var colorHex: String = "#3B82F6"
         var iconName: String = "shippingbox"
+        var searchQuery: String = ""
+        
         // UI state for "Add item"
         var isAddingItem = false
         var newItemName = ""

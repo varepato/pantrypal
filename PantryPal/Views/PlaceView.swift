@@ -12,24 +12,49 @@ struct PlaceView: View {
     init(store: StoreOf<PlaceFeature>) { self.store = store }
     
     var body: some View {
+        let query = store.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        // sort first, then filter by name
+        let visibleItems = store.items
+            .sorted { a, b in
+                let ka = sortKey(for: a), kb = sortKey(for: b)
+                if ka.group != kb.group { return ka.group < kb.group }
+                if ka.days  != kb.days  { return ka.days  < kb.days  }
+                return ka.name < kb.name
+            }
+            .filter { query.isEmpty || $0.name.lowercased().contains(query) }
+
         List {
-            if store.items.isEmpty {
+            if visibleItems.isEmpty {
+                // Empty state for this search
                 VStack(spacing: 8) {
-                    Image(systemName: "carrot")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.secondary)
-                    
-                    Text("No items here")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    Text("Use the + button to add food.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    if query.isEmpty {
+                        VStack(spacing: 8) {
+                            Image(systemName: "carrot")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.secondary)
+                            
+                            Text("No items here")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            
+                            Text("Use the + button to add food.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 200)
+                        .padding()
+                        .listRowBackground(Color.clear)  // keeps background clean
+                    } else {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 36))
+                            .foregroundStyle(.secondary)
+                        Text("No results for “\(store.searchQuery)”")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                .frame(maxWidth: .infinity, minHeight: 200)
-                .padding()
-                .listRowBackground(Color.clear)  // keeps background clean
+                .frame(maxWidth: .infinity, minHeight: 180)
+                .listRowBackground(Color.clear)
             } else {
                 ForEach(store.items.sorted(by: { lhs, rhs in
                     let a = sortKey(for: lhs)
@@ -48,6 +73,11 @@ struct PlaceView: View {
                 .onDelete { store.send(.deleteItems($0)) }
             }
         }
+        .searchable(
+            text: $store.searchQuery,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search items"
+        )
         .safeAreaInset(edge: .bottom) {
             HStack {
                 Spacer()

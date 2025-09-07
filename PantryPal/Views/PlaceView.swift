@@ -23,7 +23,7 @@ struct PlaceView: View {
             }
             .filter { query.isEmpty || $0.name.lowercased().contains(query) }
 
-        List {
+        var list = List {
             if visibleItems.isEmpty {
                 // Empty state for this search
                 VStack(spacing: 8) {
@@ -56,13 +56,7 @@ struct PlaceView: View {
                 .frame(maxWidth: .infinity, minHeight: 180)
                 .listRowBackground(Color.clear)
             } else {
-                ForEach(store.items.sorted(by: { lhs, rhs in
-                    let a = sortKey(for: lhs)
-                    let b = sortKey(for: rhs)
-                    if a.group != b.group { return a.group < b.group }
-                    if a.days  != b.days  { return a.days  < b.days  }
-                    return a.name < b.name
-                })) { item in
+                ForEach(visibleItems) { item in
                     FoodItemRow(
                         item: item,
                         onQtyChange: { newQty in
@@ -73,11 +67,17 @@ struct PlaceView: View {
                 .onDelete { store.send(.deleteItems($0)) }
             }
         }
-        .searchable(
-            text: $store.searchQuery,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Search items"
-        )
+        Group {
+            if store.items.isEmpty {
+                list
+            } else {
+                list.searchable(
+                    text: $store.searchQuery,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Search items"
+                )
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             HStack {
                 Spacer()

@@ -159,7 +159,7 @@ struct PlaceFeature {
     }
     
     private func reminderDate(for expiration: Date, leadDays: Int = 2) -> Date {
-      Calendar.current.date(byAdding: .day, value: -leadDays, to: expiration) ?? expiration
+        Calendar.current.date(byAdding: .day, value: -leadDays, to: expiration) ?? expiration
     }
     
 }

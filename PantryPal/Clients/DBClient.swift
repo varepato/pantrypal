@@ -42,7 +42,9 @@ extension DBClient {
         .init(
             load: {
                 try await MainActor.run {
-                    let places = try context.fetch(FetchDescriptor<PlaceStore>())
+                    let places = try context.fetch(FetchDescriptor<PlaceStore>(
+                        sortBy: [SortDescriptor(\.name, order: .forward)]
+                    ))
                     return places.map { ps in
                         PlaceFeature.State(
                             id: ps.id,
@@ -66,7 +68,9 @@ extension DBClient {
             },
             replaceAll: { places in
                 try await MainActor.run {
-                    let existing = try context.fetch(FetchDescriptor<PlaceStore>())
+                    let existing = try context.fetch(FetchDescriptor<PlaceStore>(
+                        sortBy: [SortDescriptor(\.name, order: .forward)]
+                    ))
                     existing.forEach { context.delete($0) }
                     for p in places {
                         let place = PlaceStore(

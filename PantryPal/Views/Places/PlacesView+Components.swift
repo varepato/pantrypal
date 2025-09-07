@@ -146,11 +146,21 @@ struct PlaceCard: View {
             )
             .overlay(alignment: .topTrailing) {
                 if hasExpired || hasExpiringSoon {
-                    Circle()
-                        .fill(hasExpired ? Color.red : Color.orange)
-                        .frame(width: 10, height: 10)
-                        .offset(x: -8, y: 8)
-                        .accessibilityLabel(hasExpired ? "Has expired items" : "Has expiring items")
+                    HStack(spacing: 4) {
+                        if hasExpired {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 10, height: 10)
+                                .accessibilityLabel("Has expired items")
+                        }
+                        if hasExpiringSoon {
+                            Circle()
+                                .fill(Color.orange)
+                                .frame(width: 10, height: 10)
+                                .accessibilityLabel("Has expiring items")
+                        }
+                    }
+                    .offset(x: -8, y: 8)
                 }
             }
         }

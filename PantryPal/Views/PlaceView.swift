@@ -31,12 +31,17 @@ struct PlaceView: View {
                 .padding()
                 .listRowBackground(Color.clear)  // keeps background clean
             } else {
-                ForEach(store.items) { (item: FoodItem) in
+                ForEach(store.items.sorted(by: { lhs, rhs in
+                    let a = sortKey(for: lhs)
+                    let b = sortKey(for: rhs)
+                    if a.group != b.group { return a.group < b.group }
+                    if a.days  != b.days  { return a.days  < b.days  }
+                    return a.name < b.name
+                })) { item in
                     FoodItemRow(
                         item: item,
-                        onQtyChange: { (newQty: Int) in
-                            let id = item.id
-                            store.send(.quantityChanged(id: id, qty: newQty))
+                        onQtyChange: { newQty in
+                            store.send(.quantityChanged(id: item.id, qty: newQty))
                         }
                     )
                 }
@@ -62,6 +67,23 @@ struct PlaceView: View {
                 isPresented: $store.isAddingItem,
                 onConfirm: { store.send(.confirmAddItem) }
             )
+        }
+    }
+    
+    private func sortKey(for item: FoodItem) -> (group: Int, days: Int, name: String) {
+        // daysUntil: negative = expired, 0..N = future, nil = unknown
+        let du = item.expirationDate.flatMap { Calendar.current.dateComponents([.day], from: Date(), to: $0).day }
+        
+        switch du {
+        case let d? where d < 0:
+            // Group 0: expired — most overdue first (more negative first)
+            return (0, d, item.name.lowercased())
+        case let d?:
+            // Group 1: has date in future — sooner first
+            return (1, d, item.name.lowercased())
+        default:
+            // Group 2: no date — push to bottom, then by name
+            return (2, .max, item.name.lowercased())
         }
     }
 }

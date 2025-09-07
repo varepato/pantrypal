@@ -136,6 +136,7 @@ struct PlacesFeature {
                 state.isAddingPlace = false
                 state.newPlaceColorHex = "#3B82F6"
                 
+                sortPlaces(&state.places)
                 // persist snapshot
                 let snapshot = Array(state.places)
                 return .run { _ in
@@ -149,6 +150,7 @@ struct PlacesFeature {
                     let id = state.places[i].id
                     _ = state.places.remove(id: id)
                 }
+                sortPlaces(&state.places) 
                 let snapshot = Array(state.places)
                 return .run { _ in
                     try await db.replaceAll(snapshot)
@@ -157,6 +159,7 @@ struct PlacesFeature {
                 // ---- Keep parent in sync with child updates (items added/edited)
             case let .path(.element(id: _, action: .place(.delegate(.updated(child))))):
                 state.places[id: child.id] = child
+                sortPlaces(&state.places)
                 let snapshot = Array(state.places)
                 return .run { _ in
                     try await db.replaceAll(snapshot)
@@ -176,6 +179,7 @@ struct PlacesFeature {
                 
                 // pop the view
                 state.path.pop(from: elementID)
+                sortPlaces(&state.places)
                 
                 // Persist the new snapshot
                 let snapshot = Array(state.places)
@@ -211,5 +215,14 @@ struct PlacesFeature {
           Scope(state: \.expiration, action: \.expiration) { ExpirationFeature() }
         }
     }
+    
+    private func sortPlaces(_ places: inout IdentifiedArrayOf<PlaceFeature.State>) {
+        places.sort { a, b in
+            let cmp = a.name.localizedCaseInsensitiveCompare(b.name)
+            if cmp == .orderedSame { return a.id.uuidString < b.id.uuidString } // stable tie-breaker
+            return cmp == .orderedAscending
+        }
+    }
+    
 }
 

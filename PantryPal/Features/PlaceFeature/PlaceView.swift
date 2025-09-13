@@ -9,6 +9,7 @@ import ComposableArchitecture
 
 struct PlaceView: View {
     @Bindable var store: StoreOf<PlaceFeature>
+    
     init(store: StoreOf<PlaceFeature>) { self.store = store }
     
     var body: some View {
@@ -22,7 +23,7 @@ struct PlaceView: View {
                 return ka.name < kb.name
             }
             .filter { query.isEmpty || $0.name.lowercased().contains(query) }
-
+        
         var list = List {
             if visibleItems.isEmpty {
                 // Empty state for this search
@@ -61,43 +62,60 @@ struct PlaceView: View {
                         item: item,
                         onQtyChange: { newQty in
                             store.send(.quantityChanged(id: item.id, qty: newQty))
+                        },
+                        onSetExpiry: { newDate in
+                            store.send(.setItemExpiry(id: item.id, date: newDate))
                         }
+                    )
+                    .background(
+                        Color.clear.anchorPreference(
+                            key: RowAnchorKey.self,
+                            value: .bounds,
+                            transform: { [item.id: $0] }
+                        )
                     )
                 }
                 .onDelete { store.send(.deleteItems($0)) }
             }
         }
-        Group {
-            if store.items.isEmpty {
-                list
-            } else {
-                list.searchable(
-                    text: $store.searchQuery,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search items"
+        ZStack {
+            // Your list + other UI
+            Group {
+                if store.items.isEmpty {
+                    list
+                } else {
+                    list.searchable(
+                        text: $store.searchQuery,
+                        placement: .navigationBarDrawer(displayMode: .always),
+                        prompt: "Search items"
+                    )
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                HStack {
+                    Spacer()
+                    AddFAB { store.send(.addItemButtonTapped) }
+                        .padding(.trailing, 24)
+                }
+                .padding(.bottom, 8)   // space above the home indicator
+                .background(.clear)
+            }
+            .navigationTitle(store.name)
+            .sheet(isPresented: $store.isAddingItem) {
+                AddFoodItemSheet(
+                    name: $store.newItemName,
+                    qty: $store.newItemQty,
+                    notes: $store.newItemNotes,
+                    expiry: $store.newItemExpiry,
+                    isPresented: $store.isAddingItem,
+                    onConfirm: { store.send(.confirmAddItem) }
                 )
             }
+            
         }
-        .safeAreaInset(edge: .bottom) {
-            HStack {
-                Spacer()
-                AddFAB { store.send(.addItemButtonTapped) }
-                    .padding(.trailing, 24)
-            }
-            .padding(.bottom, 8)   // space above the home indicator
-            .background(.clear)
-        }
-        .navigationTitle(store.name)
-        .sheet(isPresented: $store.isAddingItem) {
-            AddFoodItemSheet(
-                name: $store.newItemName,
-                qty: $store.newItemQty,
-                notes: $store.newItemNotes,
-                expiry: $store.newItemExpiry,
-                isPresented: $store.isAddingItem,
-                onConfirm: { store.send(.confirmAddItem) }
-            )
-        }
+        
+        
+        
     }
     
     private func sortKey(for item: FoodItem) -> (group: Int, days: Int, name: String) {
@@ -116,53 +134,134 @@ struct PlaceView: View {
             return (2, .max, item.name.lowercased())
         }
     }
+    
 }
 
 private struct FoodItemRow: View {
     let item: FoodItem
     let onQtyChange: (Int) -> Void
-    
+    let onSetExpiry: (Date?) -> Void
+
+    @State private var tempDate = Date()
+    private let pickerTapWidth: CGFloat = 180   // <= keep this narrower than the row
+
     var body: some View {
-        HStack(alignment: .center) {
+        HStack {
             VStack(alignment: .leading, spacing: 4) {
-                // Name + quantity inline
                 HStack(spacing: 8) {
                     Text(item.name).font(.headline)
-                    Text("• \(item.quantity)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    Text("• \(item.quantity)").font(.subheadline).foregroundStyle(.secondary)
                 }
-                
-                if let label = expiryLabel() {
-                    Text(label.text)
+
+                HStack(spacing: 8) {
+                    // Your label
+                    let labelView = Group {
+                        if let label = expiryLabel() {
+                            Text("\(label.text)   -").font(.caption).foregroundStyle(label.color)
+                        } else {
+                            Text("No expiration date").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+
+                    // Overlay compact DatePicker on the label
+                    labelView
+                        .overlay(alignment: .leading) {
+                            DatePicker(
+                                "",
+                                selection: Binding(
+                                    get: { tempDate },
+                                    set: { newValue in
+                                        tempDate = newValue
+                                        onSetExpiry(newValue)  // commit on pick
+                                    }
+                                ),
+                                displayedComponents: .date
+                            )
+                            .labelsHidden()
+                            .datePickerStyle(.compact)
+                            .frame(width: pickerTapWidth, height: 24, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .opacity(0.02) // invisible but tappable
+                            .allowsHitTesting(true)
+                        }
+                        .onAppear { tempDate = item.expirationDate ?? Date() }
+
+                    if item.expirationDate != nil {
+                        Button("Clear date", role: .destructive) {
+                            onSetExpiry(nil)
+                            // keep tempDate as-is; next open defaults to today (or set to Date())
+                        }
                         .font(.caption)
-                        .foregroundStyle(label.color)
+                    }
                 }
-                
+
                 if let notes = item.notes, !notes.isEmpty {
                     Text(notes).font(.caption).foregroundStyle(.secondary)
                 }
             }
-            
+
             Spacer()
-            
-            // Quick quantity stepper (optional; keeps list interactive)
+
             Stepper(
-                value: Binding<Int>(
-                    get: { item.quantity },
-                    set: { onQtyChange($0) }
-                ),
+                value: Binding(get: { item.quantity }, set: { onQtyChange($0) }),
                 in: 0...999
             ) { EmptyView() }
-                .labelsHidden()
+            .labelsHidden()
         }
     }
-    
+
     private func expiryLabel() -> (text: String, color: Color)? {
-        guard let days = item.daysUntilExpiry else { return nil }
-        if days < 0 { return ("Expired \(abs(days))d", .red) }
-        if days == 0 { return ("Expires today", .orange) }
-        if days <= 7 { return ("Expires in \(days)d", .orange) }
-        return ("Expires in \(days)d", .secondary)
+        guard let d = item.daysUntilExpiry else { return nil }
+        if d < 0 { return ("Expired \(abs(d))d ago", .red) }
+        if d == 0 { return ("Expires today", .orange) }
+        if d <= 7 { return ("Expires in \(d)d", .orange) }
+        return ("Expires in \(d)d", .secondary)
     }
 }
+
+
+
+struct RowAnchorKey: PreferenceKey {
+    static var defaultValue: [UUID: Anchor<CGRect>] = [:]
+    static func reduce(value: inout [UUID: Anchor<CGRect>],
+                       nextValue: () -> [UUID: Anchor<CGRect>]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
+    }
+}
+
+struct FloatingDateCard: View {
+    @Binding var date: Date
+    let onCommit: (Date?) -> Void
+    let onDismiss: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            DatePicker("", selection: $date, displayedComponents: .date)
+                .labelsHidden()
+                .datePickerStyle(.graphical)
+            
+            HStack {
+                Button("Clear", role: .destructive) {
+                    onCommit(nil); onDismiss()
+                }
+                Spacer()
+                Button("Done") {
+                    onCommit(date); onDismiss()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding(.horizontal, 6)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.systemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color(.quaternaryLabel), lineWidth: 1)
+        )
+        .shadow(radius: 16, y: 8)
+    }
+}
+

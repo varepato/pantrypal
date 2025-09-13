@@ -37,6 +37,7 @@
 		1ADEB0262E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
 		1ADEB0272E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
 		1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */; };
+		1ADEB02E2E75B58B000D4B6F /* PlaceView+Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB02D2E75B580000D4B6F /* PlaceView+Components.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +110,7 @@
 		1ADEB0202E737E5B000D4B6F /* MiniExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MiniExtension.entitlements; sourceTree = "<group>"; };
 		1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
 		1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
+		1ADEB02D2E75B580000D4B6F /* PlaceView+Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaceView+Components.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -173,7 +175,6 @@
 		1A0889EB2E6BC87900DE458B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				1A0889EE2E6BCC6400DE458B /* ExpirationLogic.swift */,
 				1A07860A2E6A26A0008B50DE /* PersistenceModels.swift */,
 				1A0785FE2E68708B008B50DE /* Domain.swift */,
 			);
@@ -193,6 +194,7 @@
 		1A0889F82E6BD95200DE458B /* Expiration */ = {
 			isa = PBXGroup;
 			children = (
+				1A0889EE2E6BCC6400DE458B /* ExpirationLogic.swift */,
 				1A0889F62E6BD62300DE458B /* ExpirationView.swift */,
 				1A0889F92E6BD95C00DE458B /* ExpirationRowBuilder.swift */,
 				1A0889F32E6BD5ED00DE458B /* ExpirationFeature.swift */,
@@ -276,7 +278,6 @@
 		1A6377EC2E6CF30200C6AAA2 /* MainPageFeature */ = {
 			isa = PBXGroup;
 			children = (
-				1A0786082E68BAA4008B50DE /* AddFoodItemView.swift */,
 				1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */,
 				1A0786042E687294008B50DE /* PlacesFeature.swift */,
 				1A0786062E6872B9008B50DE /* PlacesView.swift */,
@@ -288,8 +289,10 @@
 		1ADEB02C2E750CDA000D4B6F /* PlaceFeature */ = {
 			isa = PBXGroup;
 			children = (
+				1ADEB02D2E75B580000D4B6F /* PlaceView+Components.swift */,
 				1A0786022E68726A008B50DE /* PlaceView.swift */,
 				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
+				1A0786082E68BAA4008B50DE /* AddFoodItemView.swift */,
 			);
 			path = PlaceFeature;
 			sourceTree = "<group>";
@@ -468,6 +471,7 @@
 				1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */,
 				1A0786032E68726E008B50DE /* PlaceView.swift in Sources */,
 				1A0786012E6871DC008B50DE /* PlaceFeature.swift in Sources */,
+				1ADEB02E2E75B58B000D4B6F /* PlaceView+Components.swift in Sources */,
 				1A07860B2E6A26A8008B50DE /* PersistenceModels.swift in Sources */,
 				1A0786092E68BAAA008B50DE /* AddFoodItemView.swift in Sources */,
 				1ADEB0252E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
@@ -663,7 +667,7 @@
 				CODE_SIGN_ENTITLEMENTS = PantryPal/PantryPal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"PantryPal/Preview Content\"";
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
@@ -678,7 +682,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -696,7 +700,7 @@
 				CODE_SIGN_ENTITLEMENTS = PantryPal/PantryPal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"PantryPal/Preview Content\"";
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
@@ -711,7 +715,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

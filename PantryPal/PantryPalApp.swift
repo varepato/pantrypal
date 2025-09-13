@@ -67,3 +67,13 @@ struct RootView: View {
 }
 
 
+/*
+ TODO:
+ - Remove item once it goes to zero
+ - Edit place
+ - Grocery list? > show a list of items to buy when low on items.
+ - With ML :
+    - Suggest common items
+    - Suggest common places
+    - Suggest recipes
+ */

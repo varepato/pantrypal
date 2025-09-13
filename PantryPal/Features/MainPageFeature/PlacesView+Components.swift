@@ -22,6 +22,22 @@ struct StatusBanner: View {
                 .frame(width: 10, height: 10)
                 .padding(.top, 6)
             
+//            if (kind == .expired){
+//                Image(systemName: "xmark.octagon.fill")
+//                  .symbolRenderingMode(.palette)        // octagon + X
+//                  .foregroundStyle(.white, .red)
+//                  .font(.subheadline)
+//                  .frame(width: 10, height: 10)
+//                  .padding(.top, 5)
+//            }else{
+//                Image(systemName: "clock.badge.exclamationmark")
+//                  .symbolRenderingMode(.palette)        // triangle + exclamation
+//                  .foregroundStyle(.orange)     // primary, secondary
+//                  .font(.subheadline)
+//                  .frame(width: 10, height: 10)
+//                  .padding(.top, 5)
+//            }
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)

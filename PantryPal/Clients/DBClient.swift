@@ -95,6 +95,7 @@ extension DBClient {
                     }
                     try context.save()
                 }
+                WidgetSnapshotWriter.saveFromPlaces(places)
             }
         )
     }

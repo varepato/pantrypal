@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -29,6 +29,14 @@
 		1A255E032E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */; };
 		1A255E122E65EC4C005BA185 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 1A255E112E65EC4C005BA185 /* ComposableArchitecture */; };
 		1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */; };
+		1ADEB0022E7373B9000D4B6F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */; };
+		1ADEB0042E7373B9000D4B6F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */; };
+		1ADEB0152E7373BA000D4B6F /* MiniExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1ADEB0222E7383F1000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
+		1ADEB0252E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
+		1ADEB0262E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
+		1ADEB0272E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
+		1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +54,28 @@
 			remoteGlobalIDString = 1A255DDF2E65E9C7005BA185;
 			remoteInfo = PantryPal;
 		};
+		1ADEB0132E7373BA000D4B6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A255DD82E65E9C7005BA185 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1ADEAFFF2E7373B9000D4B6F;
+			remoteInfo = MiniExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1ADEB0162E7373BA000D4B6F /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1ADEB0152E7373BA000D4B6F /* MiniExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1A0785FE2E68708B008B50DE /* Domain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain.swift; sourceTree = "<group>"; };
@@ -73,7 +102,28 @@
 		1A255E002E65E9C9005BA185 /* PantryPalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITests.swift; sourceTree = "<group>"; };
 		1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MiniExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		1ADEB01F2E737E4E000D4B6F /* PantryPal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PantryPal.entitlements; sourceTree = "<group>"; };
+		1ADEB0202E737E5B000D4B6F /* MiniExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MiniExtension.entitlements; sourceTree = "<group>"; };
+		1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
+		1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1ADEB0192E7373BA000D4B6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1ADEAFFF2E7373B9000D4B6F /* MiniExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		1ADEB0052E7373B9000D4B6F /* Mini */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (1ADEB0192E7373BA000D4B6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Mini; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		1A255DDD2E65E9C7005BA185 /* Frameworks */ = {
@@ -98,12 +148,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1ADEAFFD2E7373B9000D4B6F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1ADEB0042E7373B9000D4B6F /* SwiftUI.framework in Frameworks */,
+				1ADEB0022E7373B9000D4B6F /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1A0889EA2E6BC86200DE458B /* Clients */ = {
 			isa = PBXGroup;
 			children = (
+				1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */,
 				1A0889E82E6B587800DE458B /* NotificationClient.swift */,
 				1A07860C2E6A280D008B50DE /* DBClient.swift */,
 			);
@@ -120,39 +180,20 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		1A0889EC2E6BC89900DE458B /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				1A0889F62E6BD62300DE458B /* ExpirationView.swift */,
-				1A0786082E68BAA4008B50DE /* AddFoodItemView.swift */,
-				1A0786022E68726A008B50DE /* PlaceView.swift */,
-				1A0889F22E6BCD0900DE458B /* Places */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		1A0889ED2E6BC8AD00DE458B /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				1A6377EC2E6CF30200C6AAA2 /* PlacesFeature */,
+				1ADEB02C2E750CDA000D4B6F /* PlaceFeature */,
+				1A6377EC2E6CF30200C6AAA2 /* MainPageFeature */,
 				1A0889F82E6BD95200DE458B /* Expiration */,
-				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
 			);
 			path = Features;
-			sourceTree = "<group>";
-		};
-		1A0889F22E6BCD0900DE458B /* Places */ = {
-			isa = PBXGroup;
-			children = (
-				1A0786062E6872B9008B50DE /* PlacesView.swift */,
-				1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */,
-			);
-			path = Places;
 			sourceTree = "<group>";
 		};
 		1A0889F82E6BD95200DE458B /* Expiration */ = {
 			isa = PBXGroup;
 			children = (
+				1A0889F62E6BD62300DE458B /* ExpirationView.swift */,
 				1A0889F92E6BD95C00DE458B /* ExpirationRowBuilder.swift */,
 				1A0889F32E6BD5ED00DE458B /* ExpirationFeature.swift */,
 			);
@@ -162,9 +203,12 @@
 		1A255DD72E65E9C7005BA185 = {
 			isa = PBXGroup;
 			children = (
+				1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */,
+				1ADEB0202E737E5B000D4B6F /* MiniExtension.entitlements */,
 				1A255DE22E65E9C7005BA185 /* PantryPal */,
 				1A255DF52E65E9C9005BA185 /* PantryPalTests */,
 				1A255DFF2E65E9C9005BA185 /* PantryPalUITests */,
+				1ADEB0052E7373B9000D4B6F /* Mini */,
 				1A255DE12E65E9C7005BA185 /* Products */,
 				1A255E102E65EC4C005BA185 /* Frameworks */,
 			);
@@ -176,6 +220,7 @@
 				1A255DE02E65E9C7005BA185 /* PantryPal.app */,
 				1A255DF22E65E9C9005BA185 /* PantryPalTests.xctest */,
 				1A255DFC2E65E9C9005BA185 /* PantryPalUITests.xctest */,
+				1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,8 +228,8 @@
 		1A255DE22E65E9C7005BA185 /* PantryPal */ = {
 			isa = PBXGroup;
 			children = (
+				1ADEB01F2E737E4E000D4B6F /* PantryPal.entitlements */,
 				1A0889ED2E6BC8AD00DE458B /* Features */,
-				1A0889EC2E6BC89900DE458B /* Views */,
 				1A0889EB2E6BC87900DE458B /* Models */,
 				1A0889EA2E6BC86200DE458B /* Clients */,
 				1A255DE32E65E9C7005BA185 /* PantryPalApp.swift */,
@@ -222,17 +267,31 @@
 		1A255E102E65EC4C005BA185 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */,
+				1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		1A6377EC2E6CF30200C6AAA2 /* PlacesFeature */ = {
+		1A6377EC2E6CF30200C6AAA2 /* MainPageFeature */ = {
 			isa = PBXGroup;
 			children = (
+				1A0786082E68BAA4008B50DE /* AddFoodItemView.swift */,
 				1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */,
 				1A0786042E687294008B50DE /* PlacesFeature.swift */,
+				1A0786062E6872B9008B50DE /* PlacesView.swift */,
+				1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */,
 			);
-			path = PlacesFeature;
+			path = MainPageFeature;
+			sourceTree = "<group>";
+		};
+		1ADEB02C2E750CDA000D4B6F /* PlaceFeature */ = {
+			isa = PBXGroup;
+			children = (
+				1A0786022E68726A008B50DE /* PlaceView.swift */,
+				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
+			);
+			path = PlaceFeature;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,10 +304,12 @@
 				1A255DDC2E65E9C7005BA185 /* Sources */,
 				1A255DDD2E65E9C7005BA185 /* Frameworks */,
 				1A255DDE2E65E9C7005BA185 /* Resources */,
+				1ADEB0162E7373BA000D4B6F /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1ADEB0142E7373BA000D4B6F /* PBXTargetDependency */,
 			);
 			name = PantryPal;
 			packageProductDependencies = (
@@ -294,6 +355,28 @@
 			productReference = 1A255DFC2E65E9C9005BA185 /* PantryPalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		1ADEAFFF2E7373B9000D4B6F /* MiniExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1ADEB01A2E7373BA000D4B6F /* Build configuration list for PBXNativeTarget "MiniExtension" */;
+			buildPhases = (
+				1ADEAFFC2E7373B9000D4B6F /* Sources */,
+				1ADEAFFD2E7373B9000D4B6F /* Frameworks */,
+				1ADEAFFE2E7373B9000D4B6F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1ADEB0052E7373B9000D4B6F /* Mini */,
+			);
+			name = MiniExtension;
+			packageProductDependencies = (
+			);
+			productName = MiniExtension;
+			productReference = 1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -301,7 +384,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					1A255DDF2E65E9C7005BA185 = {
@@ -314,6 +397,9 @@
 					1A255DFB2E65E9C9005BA185 = {
 						CreatedOnToolsVersion = 15.4;
 						TestTargetID = 1A255DDF2E65E9C7005BA185;
+					};
+					1ADEAFFF2E7373B9000D4B6F = {
+						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
@@ -336,6 +422,7 @@
 				1A255DDF2E65E9C7005BA185 /* PantryPal */,
 				1A255DF12E65E9C9005BA185 /* PantryPalTests */,
 				1A255DFB2E65E9C9005BA185 /* PantryPalUITests */,
+				1ADEAFFF2E7373B9000D4B6F /* MiniExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -364,6 +451,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1ADEAFFE2E7373B9000D4B6F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -371,10 +465,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */,
 				1A0786032E68726E008B50DE /* PlaceView.swift in Sources */,
 				1A0786012E6871DC008B50DE /* PlaceFeature.swift in Sources */,
 				1A07860B2E6A26A8008B50DE /* PersistenceModels.swift in Sources */,
 				1A0786092E68BAAA008B50DE /* AddFoodItemView.swift in Sources */,
+				1ADEB0252E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
 				1A255DE42E65E9C7005BA185 /* PantryPalApp.swift in Sources */,
 				1A0889F72E6BD62700DE458B /* ExpirationView.swift in Sources */,
 				1A07860D2E6A281B008B50DE /* DBClient.swift in Sources */,
@@ -395,6 +491,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A255DF72E65E9C9005BA185 /* PantryPalTests.swift in Sources */,
+				1ADEB0262E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +501,15 @@
 			files = (
 				1A255E032E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift in Sources */,
 				1A255E012E65E9C9005BA185 /* PantryPalUITests.swift in Sources */,
+				1ADEB0272E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1ADEAFFC2E7373B9000D4B6F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1ADEB0222E7383F1000D4B6F /* WidgetSnapshot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +525,11 @@
 			isa = PBXTargetDependency;
 			target = 1A255DDF2E65E9C7005BA185 /* PantryPal */;
 			targetProxy = 1A255DFD2E65E9C9005BA185 /* PBXContainerItemProxy */;
+		};
+		1ADEB0142E7373BA000D4B6F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1ADEAFFF2E7373B9000D4B6F /* MiniExtension */;
+			targetProxy = 1ADEB0132E7373BA000D4B6F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -549,6 +660,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantryPal/PantryPal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 3;
@@ -581,6 +693,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PantryPal/PantryPal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 3;
@@ -676,6 +789,66 @@
 			};
 			name = Release;
 		};
+		1ADEB0172E7373BA000D4B6F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MiniExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9H4HM9FG44;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mini/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Pantry Neat";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal.Mini;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1ADEB0182E7373BA000D4B6F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MiniExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9H4HM9FG44;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mini/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Pantry Neat";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = VALMAD.PantryPal.Mini;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -711,6 +884,15 @@
 			buildConfigurations = (
 				1A255E0D2E65E9C9005BA185 /* Debug */,
 				1A255E0E2E65E9C9005BA185 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1ADEB01A2E7373BA000D4B6F /* Build configuration list for PBXNativeTarget "MiniExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1ADEB0172E7373BA000D4B6F /* Debug */,
+				1ADEB0182E7373BA000D4B6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

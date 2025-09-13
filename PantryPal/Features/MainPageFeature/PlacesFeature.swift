@@ -57,6 +57,10 @@ struct PlacesFeature {
         // Banner
         enum BannerKind: Equatable { case expired, expiringSoon }
         case dismissBanner(BannerKind)
+        
+        // Deeplink
+        case openAllItems
+        case bannerTapped(BannerKind)
     }
     
     // MARK: - Dependencies
@@ -70,6 +74,20 @@ struct PlacesFeature {
         
         Reduce<PlacesFeature.State, PlacesFeature.Action> { state, action in
             switch action {
+            case .openAllItems:
+                return .none
+            
+            case let .bannerTapped(kind):
+                switch kind {
+                case .expired:
+                    let rows = buildExpirationRows(kind: .expired, places: state.places)
+                    state.path.append(.expiration(.init(kind: .expired, rows: rows)))
+                case .expiringSoon:
+                    let rows = buildExpirationRows(kind: .expiringSoon(days: 3), places: state.places)
+                    state.path.append(.expiration(.init(kind: .expiringSoon(days: 3), rows: rows)))
+                }
+                return .none
+                
             case let .dismissBanner(kind):
                 let tomorrow = Calendar.current.startOfDay(for: Date()).addingTimeInterval(60*60*24)
                 switch kind {
@@ -150,13 +168,12 @@ struct PlacesFeature {
                     let id = state.places[i].id
                     _ = state.places.remove(id: id)
                 }
-                sortPlaces(&state.places) 
+                sortPlaces(&state.places)
                 let snapshot = Array(state.places)
                 return .run { _ in
                     try await db.replaceAll(snapshot)
                 }
                 
-                // ---- Keep parent in sync with child updates (items added/edited)
             case let .path(.element(id: _, action: .place(.delegate(.updated(child))))):
                 state.places[id: child.id] = child
                 sortPlaces(&state.places)
@@ -211,8 +228,8 @@ struct PlacesFeature {
             case expiration(ExpirationFeature.Action)
         }
         var body: some ReducerOf<Self> {
-          Scope(state: \.place, action: \.place) { PlaceFeature() }
-          Scope(state: \.expiration, action: \.expiration) { ExpirationFeature() }
+            Scope(state: \.place, action: \.place) { PlaceFeature() }
+            Scope(state: \.expiration, action: \.expiration) { ExpirationFeature() }
         }
     }
     

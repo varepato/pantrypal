@@ -24,14 +24,46 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
-        PlacesView(
-            store: Store(initialState: PlacesFeature.State()) {
-                PlacesFeature()
-            } withDependencies: { deps in
-                deps.db = .live(modelContext)        // 👈 inject SwiftData client
+        
+        let store = Store(initialState: PlacesFeature.State()) {
+            PlacesFeature()
+        } withDependencies: { deps in
+            deps.db = .live(modelContext)
+        }
+        PlacesView(store: store)
+            .task {
+                // Seed snapshot on launch
+                let db = DBClient.live(modelContext)
+                if let places = try? await db.load() {
+                    WidgetSnapshotWriter.saveFromPlaces(places)
+                }
             }
-        )
+            .onOpenURL { url in
+                route(url, store: store)   // 👈 pass the store
+            }
     }
+    
+    private func route(_ url: URL, store: StoreOf<PlacesFeature>) {
+        guard url.scheme?.lowercased() == "pantrypal" else { return }
+        let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let host = url.host?.lowercased()
+        
+        let vs = ViewStore(store, observe: { _ in true })   // ✅ Bool is Equatable
+        
+        if host == "items" {
+            vs.send(.openAllItems)
+            return
+        }
+        if host == "expiration" {
+            let filter = comps?.queryItems?.first(where: { $0.name == "filter" })?.value?.lowercased()
+            switch filter {
+            case "expired": vs.send(.bannerTapped(.expired))
+            case "soon":    vs.send(.bannerTapped(.expiringSoon))
+            default:        vs.send(.bannerTapped(.expiringSoon))
+            }
+        }
+    }
+
 }
 
 

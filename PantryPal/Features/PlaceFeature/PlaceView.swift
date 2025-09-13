@@ -157,7 +157,7 @@ private struct FoodItemRow: View {
                     // Your label
                     let labelView = Group {
                         if let label = expiryLabel() {
-                            Text("\(label.text)   -").font(.caption).foregroundStyle(label.color)
+                            Text("\(label.text)").font(.caption).foregroundStyle(label.color)
                         } else {
                             Text("No expiration date").font(.caption).foregroundStyle(.secondary)
                         }
@@ -165,6 +165,23 @@ private struct FoodItemRow: View {
 
                     // Overlay compact DatePicker on the label
                     labelView
+                        // ⬇️ Long-press here to show Clear
+                        .contextMenu {
+                            if item.expirationDate != nil {
+                                Button("Clear date", role: .destructive) {
+                                    onSetExpiry(nil)
+                                    // (optional) reset tempDate for next open:
+                                    // tempDate = Date()
+                                }
+                            } else {
+                                // Optional helper when no date yet:
+                                Button("Set to today") {
+                                    let d = Date()
+                                    tempDate = d
+                                    onSetExpiry(d)
+                                }
+                            }
+                        }
                         .overlay(alignment: .leading) {
                             DatePicker(
                                 "",
@@ -185,14 +202,6 @@ private struct FoodItemRow: View {
                             .allowsHitTesting(true)
                         }
                         .onAppear { tempDate = item.expirationDate ?? Date() }
-
-                    if item.expirationDate != nil {
-                        Button("Clear date", role: .destructive) {
-                            onSetExpiry(nil)
-                            // keep tempDate as-is; next open defaults to today (or set to Date())
-                        }
-                        .font(.caption)
-                    }
                 }
 
                 if let notes = item.notes, !notes.isEmpty {

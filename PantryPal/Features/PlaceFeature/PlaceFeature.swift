@@ -48,6 +48,7 @@ struct PlaceFeature {
         case deleteItems(IndexSet)
         case quantityChanged(id: FoodItem.ID, qty: Int)
         case setItemExpiry(id: FoodItem.ID, date: Date?)
+        case cleanUpExpiredTapped
         
         // Lets child notify parent so the main list stays in sync.
         enum Delegate: Equatable { case updated(State) }
@@ -64,6 +65,24 @@ struct PlaceFeature {
             (state: inout PlaceFeature.State, action: PlaceFeature.Action) in
             
             switch action {
+            case .cleanUpExpiredTapped:
+                // Collect expired item IDs
+                let expiredIDs = state.items
+                    .filter { isExpired($0.expirationDate) }
+                    .map(\.id)
+
+                guard !expiredIDs.isEmpty else { return .none }
+
+                // Remove from state
+                for id in expiredIDs { _ = state.items.remove(id: id) }
+
+                // Cancel notifications for those items
+                let notifIDs = expiredIDs.map { "item-\($0.uuidString)" }
+
+                return .merge(
+                    .send(.delegate(.updated(state))),
+                    .run { _ in await notifications.cancel(notifIDs) }
+                )
             case .addItemButtonTapped:
                 state.isAddingItem = true
                 return Effect<PlaceFeature.Action>.none
@@ -71,7 +90,7 @@ struct PlaceFeature {
             case .confirmAddItem:
                 let trimmed = state.newItemName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return Effect<PlaceFeature.Action>.none }
-                guard state.newItemQty > 0 else { return .none } 
+                guard state.newItemQty > 0 else { return .none }
                 state.items.append(
                     FoodItem(
                         id: uuid(),
@@ -187,6 +206,7 @@ extension RandomAccessCollection {
 }
 
 extension PlaceFeature.State {
+    var expiredCountValue: Int { expiredCount() }
     func expiredCount() -> Int {
         items.elements.filter { isExpired($0.expirationDate) }.count
     }

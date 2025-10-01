@@ -88,6 +88,15 @@ struct PlaceView: View {
             .background(.clear)
         }
         .navigationTitle(store.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if store.withState(\.expiredCountValue) > 0 {
+                    Button("Clean up (\(store.withState(\.expiredCountValue)))", role: .destructive) {
+                        store.send(.cleanUpExpiredTapped)
+                    }
+                }
+            }
+        }
         .sheet(isPresented: $store.isAddingItem) {
             AddFoodItemSheet(
                 name: $store.newItemName,
@@ -146,15 +155,16 @@ private struct FoodItemRow: View {
             
             Spacer()
             
-            // Quick quantity stepper (optional; keeps list interactive)
-            Stepper(
-                value: Binding<Int>(
-                    get: { item.quantity },
-                    set: { onQtyChange($0) }
-                ),
-                in: 0...999
-            ) { EmptyView() }
-                .labelsHidden()
+            if let days = item.daysUntilExpiry, days > 0 {
+                Stepper(
+                    value: Binding<Int>(
+                        get: { item.quantity },
+                        set: { onQtyChange($0) }
+                    ),
+                    in: 0...999
+                ) { EmptyView() }
+                    .labelsHidden()
+            }
         }
     }
     

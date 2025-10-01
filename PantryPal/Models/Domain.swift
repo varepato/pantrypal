@@ -29,3 +29,13 @@ struct PlaceSnapshot: Identifiable, Equatable {
     var items: IdentifiedArrayOf<FoodItem> = []
 }
 
+extension FoodItem {
+    var isExpired: Bool {
+        guard let expirationDate else {
+            return false // if no date, treat as not expired
+        }
+        let today = Calendar.current.startOfDay(for: Date())
+        return expirationDate < today
+    }
+}
+

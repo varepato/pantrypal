@@ -71,7 +71,7 @@ struct PlaceFeature {
             case .confirmAddItem:
                 let trimmed = state.newItemName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return Effect<PlaceFeature.Action>.none }
-                
+                guard state.newItemQty > 0 else { return .none } 
                 state.items.append(
                     FoodItem(
                         id: uuid(),
@@ -151,8 +151,24 @@ struct PlaceFeature {
                 )
                 
             case let .quantityChanged(id, qty):
-                state.items[id: id]?.quantity = max(0, qty)
-                return Effect<PlaceFeature.Action>.send(.delegate(.updated(state)))
+                let clamped = max(0, qty)
+                guard var item = state.items[id: id] else {
+                    return .none
+                }
+                
+                if clamped == 0 {
+                    // Remove the item and cancel any scheduled reminder for it
+                    _ = state.items.remove(id: id)
+                    let notifId = "item-\(id.uuidString)"
+                    return .merge(
+                        .send(.delegate(.updated(state))),
+                        .run { _ in await notifications.cancel([notifId]) }
+                    )
+                } else {
+                    item.quantity = clamped
+                    state.items[id: id] = item
+                    return .send(.delegate(.updated(state)))
+                }
                 
             case .binding, .delegate:
                 return Effect<PlaceFeature.Action>.none

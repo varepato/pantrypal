@@ -127,7 +127,9 @@ struct PlacesFeature {
             case let .loadSucceeded(places):
                 state.places = .init(uniqueElements: places)
                 state.hasLoaded = true
-                return .none
+                return .run { [places, notifications] _ in
+                  await PantryNotifs.rescheduleAll(places: places, notifications: notifications)
+                }
                 
             case .loadFailed:
                 return .none
@@ -160,20 +162,28 @@ struct PlacesFeature {
                 // persist snapshot
                 let snapshot = Array(state.places)
                 return persistSnapshotIfReady(state, db: db)
-                return .run { _ in
-                    do { try await db.replaceAll(snapshot) }
-                    catch { print("DB save failed:", error) }
-                }
                 
                 // ---- Delete place (from grid context menu or elsewhere)
             case let .deletePlaces(indexSet):
+                // Collect items that are about to be removed so we can cancel their notifs
+                var removedItems: [FoodItem] = []
+                for i in indexSet {
+                    let place = state.places[i]
+                    removedItems.append(contentsOf: place.items)
+                }
+                
                 for i in indexSet {
                     let id = state.places[i].id
                     _ = state.places.remove(id: id)
                 }
+                
                 sortPlaces(&state.places)
                 let snapshot = Array(state.places)
-                return .run { _ in
+                
+                return .run { [removedItems, notifications, snapshot] _ in
+                    // Cancel both pre/day-of for removed items
+                    let ids = removedItems.flatMap { [NotifID.pre($0.id), NotifID.exp($0.id)] }
+                    await notifications.cancel(ids)
                     try await db.replaceAll(snapshot)
                 }
                 
@@ -181,32 +191,46 @@ struct PlacesFeature {
                 state.places[id: child.id] = child
                 sortPlaces(&state.places)
                 let snapshot = Array(state.places)
-                return .run { _ in
-                    try await db.replaceAll(snapshot)
+                return .run { [snapshot, child, notifications] _ in
+                  try await db.replaceAll(snapshot)
+                  // (Re)schedule notifications for all items in this place
+                  for item in child.items {
+                    await PantryNotifs.scheduleForItem(item, notifications: notifications)
+                  }
                 }
                 
             case let .path(.element(id: elementID, action: .expiration(.delegate(.cleanupExpired)))):
-                
-                // Remove all expired items from every place
-                for idx in state.places.indices {
-                    state.places[idx].items.removeAll { item in
-                        let d = item.expirationDate.flatMap {
-                            Calendar.current.dateComponents([.day], from: Date(), to: $0).day
-                        }
-                        return (d ?? 1) < 0
-                    }
+              // Collect expired items that will be removed, for cancellation
+              var toRemove: [FoodItem] = []
+              for idx in state.places.indices {
+                for item in state.places[idx].items {
+                  let d = item.expirationDate.flatMap {
+                    Calendar.current.dateComponents([.day], from: Date(), to: $0).day
+                  }
+                  if (d ?? 1) < 0 { toRemove.append(item) }
                 }
-                
-                // pop the view
-                state.path.pop(from: elementID)
-                sortPlaces(&state.places)
-                
-                // Persist the new snapshot
-                let snapshot = Array(state.places)
-                return .run { _ in
-                    try await db.replaceAll(snapshot)
+              }
+
+              // Remove them
+              for idx in state.places.indices {
+                state.places[idx].items.removeAll { item in
+                  let d = item.expirationDate.flatMap {
+                    Calendar.current.dateComponents([.day], from: Date(), to: $0).day
+                  }
+                  return (d ?? 1) < 0
                 }
-                
+              }
+
+              state.path.pop(from: elementID)
+              sortPlaces(&state.places)
+              let snapshot = Array(state.places)
+
+              return .run { [notifications, toRemove, snapshot] _ in
+                // Cancel pending notifs for removed (expired) items
+                let ids = toRemove.flatMap { [NotifID.pre($0.id), NotifID.exp($0.id)] }
+                await notifications.cancel(ids)
+                try await db.replaceAll(snapshot)
+              }
                 
             case .path:
                 return .none

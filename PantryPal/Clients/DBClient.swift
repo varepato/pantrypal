@@ -67,36 +67,29 @@ extension DBClient {
                 }
             },
             replaceAll: { places in
-                try await MainActor.run {
-                    let existing = try context.fetch(FetchDescriptor<PlaceStore>(
-                        sortBy: [SortDescriptor(\.name, order: .forward)]
-                    ))
-                    existing.forEach { context.delete($0) }
-                    for p in places {
-                        let place = PlaceStore(
-                            id: p.id,
-                            name: p.name,
-                            iconName: p.iconName,
-                            colorHex: p.colorHex
-                        )
-                        for it in p.items {
-                            place.items.append(
-                                FoodItemStore(
-                                    id: it.id,
-                                    name: it.name,
-                                    quantity: it.quantity,
-                                    notes: it.notes,
-                                    expirationDate: it.expirationDate,
-                                    place: place
-                                )
-                            )
-                        }
-                        context.insert(place)
-                    }
-                    try context.save()
+              var didPersist = false
+              try await MainActor.run {
+                let existing = try context.fetch(FetchDescriptor<PlaceStore>())
+                if !existing.isEmpty && places.isEmpty {
+                  print("⚠️ replaceAll skipped: empty snapshot would wipe \(existing.count) place(s)")
+                  return
                 }
-                WidgetSnapshotWriter.saveFromPlaces(places)
+                print("ℹ️ replaceAll applying snapshot: \(places.count) place(s)")
+                existing.forEach { context.delete($0) }
+                for p in places {
+                  let place = PlaceStore(id: p.id, name: p.name, iconName: p.iconName, colorHex: p.colorHex)
+                  for it in p.items {
+                    place.items.append(FoodItemStore(id: it.id, name: it.name, quantity: it.quantity,
+                                                     notes: it.notes, expirationDate: it.expirationDate, place: place))
+                  }
+                  context.insert(place)
+                }
+                try context.save()
+                didPersist = true
+              }
+              if didPersist { WidgetSnapshotWriter.saveFromPlaces(places) }
             }
+
         )
     }
 }

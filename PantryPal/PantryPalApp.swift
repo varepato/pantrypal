@@ -12,6 +12,9 @@ import ComposableArchitecture
 
 @main
 struct PantryApp: App {
+    init() {
+      BackgroundRefresh.register()
+    }
     var body: some Scene {
         WindowGroup { RootView() }
         // Register SwiftData models
@@ -21,26 +24,41 @@ struct PantryApp: App {
 
 // A tiny root so we can grab the SwiftData ModelContext and inject it into TCA
 struct RootView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
+    @State private var store: StoreOf<PlacesFeature>?
     
     var body: some View {
-        
-        let store = Store(initialState: PlacesFeature.State()) {
-            PlacesFeature()
-        } withDependencies: { deps in
-            deps.db = .live(modelContext)
-        }
-        PlacesView(store: store)
+      Group {
+        if let store {
+          PlacesView(store: store)
             .task {
-                // Seed snapshot on launch
-                let db = DBClient.live(modelContext)
-                if let places = try? await db.load() {
-                    WidgetSnapshotWriter.saveFromPlaces(places)
-                }
+              // DEBUG: schedule BG task
+              #if DEBUG
+              BackgroundRefresh.schedule()
+              #endif
+
+              // Seed widget snapshot (read-only)
+              let db = DBClient.live(modelContext)
+              if let places = try? await db.load() {
+                WidgetSnapshotWriter.saveFromPlaces(places)
+              }
+
+              // ✅ Load DB into TCA state BEFORE any writes occur
+              ViewStore(store, observe: { _ in true }).send(.loadRequested)
             }
-            .onOpenURL { url in
-                route(url, store: store)   // 👈 pass the store
+            .onOpenURL { url in route(url, store: store) }
+            .onChange(of: scenePhase) { _, newPhase in
+              if newPhase == .background { BackgroundRefresh.schedule() }
             }
+        } else {
+          ProgressView().task {
+            store = Store(initialState: PlacesFeature.State()) {
+              PlacesFeature()
+            } withDependencies: { $0.db = .live(modelContext) }
+          }
+        }
+      }
     }
     
     private func route(_ url: URL, store: StoreOf<PlacesFeature>) {

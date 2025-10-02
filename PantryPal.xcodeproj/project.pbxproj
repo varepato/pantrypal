@@ -29,6 +29,7 @@
 		1A255E032E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */; };
 		1A255E122E65EC4C005BA185 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 1A255E112E65EC4C005BA185 /* ComposableArchitecture */; };
 		1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */; };
+		1AB983FE2E8DE44D00458600 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB983FD2E8DE44200458600 /* BackgroundRefresh.swift */; };
 		1ADEB0022E7373B9000D4B6F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */; };
 		1ADEB0042E7373B9000D4B6F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */; };
 		1ADEB0152E7373BA000D4B6F /* MiniExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -102,6 +103,8 @@
 		1A255E002E65E9C9005BA185 /* PantryPalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITests.swift; sourceTree = "<group>"; };
 		1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		1AB983FB2E8DE22F00458600 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1AB983FD2E8DE44200458600 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
 		1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MiniExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -183,6 +186,7 @@
 		1A0889ED2E6BC8AD00DE458B /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				1AB983FC2E8DE43A00458600 /* Background */,
 				1ADEB02C2E750CDA000D4B6F /* PlaceFeature */,
 				1A6377EC2E6CF30200C6AAA2 /* MainPageFeature */,
 				1A0889F82E6BD95200DE458B /* Expiration */,
@@ -228,6 +232,7 @@
 		1A255DE22E65E9C7005BA185 /* PantryPal */ = {
 			isa = PBXGroup;
 			children = (
+				1AB983FB2E8DE22F00458600 /* Info.plist */,
 				1ADEB01F2E737E4E000D4B6F /* PantryPal.entitlements */,
 				1A0889ED2E6BC8AD00DE458B /* Features */,
 				1A0889EB2E6BC87900DE458B /* Models */,
@@ -283,6 +288,14 @@
 				1A0889F02E6BCCE100DE458B /* PlacesView+Components.swift */,
 			);
 			path = MainPageFeature;
+			sourceTree = "<group>";
+		};
+		1AB983FC2E8DE43A00458600 /* Background */ = {
+			isa = PBXGroup;
+			children = (
+				1AB983FD2E8DE44200458600 /* BackgroundRefresh.swift */,
+			);
+			path = Background;
 			sourceTree = "<group>";
 		};
 		1ADEB02C2E750CDA000D4B6F /* PlaceFeature */ = {
@@ -468,6 +481,7 @@
 				1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */,
 				1A0786032E68726E008B50DE /* PlaceView.swift in Sources */,
 				1A0786012E6871DC008B50DE /* PlaceFeature.swift in Sources */,
+				1AB983FE2E8DE44D00458600 /* BackgroundRefresh.swift in Sources */,
 				1A07860B2E6A26A8008B50DE /* PersistenceModels.swift in Sources */,
 				1A0786092E68BAAA008B50DE /* AddFoodItemView.swift in Sources */,
 				1ADEB0252E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
@@ -668,6 +682,7 @@
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PantryPal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PantryNeat;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -701,6 +716,7 @@
 				DEVELOPMENT_TEAM = 9H4HM9FG44;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PantryPal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PantryNeat;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

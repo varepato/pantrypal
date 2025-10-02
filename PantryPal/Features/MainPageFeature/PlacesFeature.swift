@@ -17,6 +17,7 @@ struct PlacesFeature {
     struct State: Equatable {
         // Data
         var places: IdentifiedArrayOf<PlaceFeature.State> = []
+        var hasLoaded = false
         
         // Navigation
         var path = StackState<Path.State>()
@@ -125,6 +126,7 @@ struct PlacesFeature {
                 
             case let .loadSucceeded(places):
                 state.places = .init(uniqueElements: places)
+                state.hasLoaded = true
                 return .none
                 
             case .loadFailed:
@@ -157,6 +159,7 @@ struct PlacesFeature {
                 sortPlaces(&state.places)
                 // persist snapshot
                 let snapshot = Array(state.places)
+                return persistSnapshotIfReady(state, db: db)
                 return .run { _ in
                     do { try await db.replaceAll(snapshot) }
                     catch { print("DB save failed:", error) }
@@ -239,6 +242,15 @@ struct PlacesFeature {
             if cmp == .orderedSame { return a.id.uuidString < b.id.uuidString } // stable tie-breaker
             return cmp == .orderedAscending
         }
+    }
+    
+    private func persistSnapshotIfReady(_ state: State, db: DBClient) -> Effect<Action> {
+      let snapshot = Array(state.places)
+      let canPersist = state.hasLoaded || !snapshot.isEmpty   // allow intentional “delete all” after load
+      return .run { _ in
+        if canPersist { try await db.replaceAll(snapshot) }
+        else { print("⏭️ persist skipped before initial load") }
+      }
     }
     
 }

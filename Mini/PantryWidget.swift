@@ -34,10 +34,18 @@ struct PantryProvider: TimelineProvider {
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<PantryEntry>) -> Void) {
-        let entry = load()
-        // Refresh occasionally; app writes will also trigger reloads
-        let next = Calendar.current.date(byAdding: .minute, value: 45, to: .now) ?? .now.addingTimeInterval(2700)
-        completion(Timeline(entries: [entry], policy: .after(next)))
+      let entry = load()
+
+      // refresh around 3:05 AM local time
+      let calendar = Calendar.current
+      let now = Date()
+      let next = calendar.nextDate(
+        after: now,
+        matching: DateComponents(hour: 3, minute: 5, second: 0),
+        matchingPolicy: .nextTime
+      ) ?? now.addingTimeInterval(6 * 3600)
+
+      completion(Timeline(entries: [entry], policy: .after(next)))
     }
     
     private func load() -> PantryEntry {

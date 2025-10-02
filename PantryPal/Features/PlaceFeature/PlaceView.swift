@@ -155,7 +155,7 @@ private struct FoodItemRow: View {
             
             Spacer()
             
-            if let days = item.daysUntilExpiry, days > 0 {
+            if !isExpired(item.expirationDate) {
                 Stepper(
                     value: Binding<Int>(
                         get: { item.quantity },
@@ -172,7 +172,7 @@ private struct FoodItemRow: View {
         guard let days = item.daysUntilExpiry else { return nil }
         if days < 0 { return ("Expired \(abs(days))d", .red) }
         if days == 0 { return ("Expires today", .orange) }
-        if days <= 7 { return ("Expires in \(days)d", .orange) }
+        if days <= 3 { return ("Expires in \(days)d", .orange) }
         return ("Expires in \(days)d", .secondary)
     }
 }

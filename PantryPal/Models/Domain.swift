@@ -20,22 +20,11 @@ struct FoodItem: Identifiable, Equatable {
     }
 }
 
-
 struct PlaceSnapshot: Identifiable, Equatable {
     var id: UUID = UUID()
     var name: String
     var iconName: String = "shippingbox"
     var colorHex: String = "#3B82F6"
     var items: IdentifiedArrayOf<FoodItem> = []
-}
-
-extension FoodItem {
-    var isExpired: Bool {
-        guard let expirationDate else {
-            return false // if no date, treat as not expired
-        }
-        let today = Calendar.current.startOfDay(for: Date())
-        return expirationDate < today
-    }
 }
 

@@ -12,8 +12,10 @@ public func daysUntil(_ date: Date?) -> Int? {
   return Calendar.current.dateComponents([.day], from: Date(), to: date).day
 }
 
-public func isExpired(_ date: Date?) -> Bool {
-  (daysUntil(date) ?? 1) < 0
+func isExpired(_ date: Date?) -> Bool {
+    guard let d = date else { return false }
+    let today = Calendar.current.startOfDay(for: Date())
+    return d < today
 }
 
 public func isExpiringSoon(_ date: Date?, within days: Int = 3) -> Bool {

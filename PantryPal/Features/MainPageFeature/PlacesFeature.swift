@@ -31,6 +31,7 @@ struct PlacesFeature {
         // Banner
         var hideExpiredBannerUntil: Date? = nil
         var hideExpiringBannerUntil: Date? = nil
+        var shoppingBadge: Int = 0
     }
     
     // MARK: - Action
@@ -62,6 +63,10 @@ struct PlacesFeature {
         // Deeplink
         case openAllItems
         case bannerTapped(BannerKind)
+        case shoppingButtonTapped
+        
+        case refreshShoppingBadge
+        case shoppingBadgeLoaded(Int)
     }
     
     // MARK: - Dependencies
@@ -75,9 +80,20 @@ struct PlacesFeature {
         
         Reduce<PlacesFeature.State, PlacesFeature.Action> { state, action in
             switch action {
+            case .refreshShoppingBadge:
+                return .run { [db] send in
+                    let items = try await db.loadShoppingList()
+                    let toBuy = items.filter { $0.status == .toBuy }.count
+                    await send(.shoppingBadgeLoaded(toBuy))
+                }
+            case let .shoppingBadgeLoaded(n):
+                state.shoppingBadge = n
+                return .none
+            case .shoppingButtonTapped:
+                state.path.append(.shoppingList(.init()))
+                return .none
             case .openAllItems:
                 return .none
-            
             case let .bannerTapped(kind):
                 switch kind {
                 case .expired:
@@ -88,7 +104,6 @@ struct PlacesFeature {
                     state.path.append(.expiration(.init(kind: .expiringSoon(days: 3), rows: rows)))
                 }
                 return .none
-                
             case let .dismissBanner(kind):
                 let tomorrow = Calendar.current.startOfDay(for: Date()).addingTimeInterval(60*60*24)
                 switch kind {
@@ -100,7 +115,6 @@ struct PlacesFeature {
                     state.hideExpiringBannerUntil = tomorrow
                 }
                 return .none
-                
             case .requestNotificationPermission:
                 return .run { send in
                     do {
@@ -110,10 +124,8 @@ struct PlacesFeature {
                         await send(.notificationPermissionResponse(false))
                     }
                 }
-                
             case .notificationPermissionResponse:
                 return .none
-                
             case .loadRequested:
                 return .run { send in
                     do {
@@ -123,21 +135,17 @@ struct PlacesFeature {
                         await send(.loadFailed)
                     }
                 }
-                
             case let .loadSucceeded(places):
                 state.places = .init(uniqueElements: places)
                 state.hasLoaded = true
                 return .run { [places, notifications] _ in
-                  await PantryNotifs.rescheduleAll(places: places, notifications: notifications)
+                    await PantryNotifs.rescheduleAll(places: places, notifications: notifications)
                 }
-                
             case .loadFailed:
                 return .none
-                
             case .addPlaceButtonTapped:
                 state.isAddingPlace = true
                 return .none
-                
             case .confirmAddPlace:
                 let trimmed = state.newPlaceName.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return .none }
@@ -192,45 +200,59 @@ struct PlacesFeature {
                 sortPlaces(&state.places)
                 let snapshot = Array(state.places)
                 return .run { [snapshot, child, notifications] _ in
-                  try await db.replaceAll(snapshot)
-                  // (Re)schedule notifications for all items in this place
-                  for item in child.items {
-                    await PantryNotifs.scheduleForItem(item, notifications: notifications)
-                  }
+                    try await db.replaceAll(snapshot)
+                    // (Re)schedule notifications for all items in this place
+                    for item in child.items {
+                        await PantryNotifs.scheduleForItem(item, notifications: notifications)
+                    }
+                }
+                
+            case let .path(.element(id: _, action: .place(.delegate(.depleted(name: name, id: itemID, placeID: placeID))))):
+                return .run { [db] send in
+                    _ = try await db.mergeOrCreateShoppingItem(name, 1, .depleted, itemID, placeID)
+                    await send(.refreshShoppingBadge)
+                }
+                
+            case let .path(.element(_, action: .place(.delegate(.expiredCleaned(items, placeID: placeID))))):
+                return .run { [db] send in
+                    for it in items {
+                        _ = try await db.mergeOrCreateShoppingItem(it.name, 1, .expiredCleanup, it.id, placeID)
+                    }
+                    await send(.refreshShoppingBadge)
                 }
                 
             case let .path(.element(id: elementID, action: .expiration(.delegate(.cleanupExpired)))):
-              // Collect expired items that will be removed, for cancellation
-              var toRemove: [FoodItem] = []
-              for idx in state.places.indices {
-                for item in state.places[idx].items {
-                  let d = item.expirationDate.flatMap {
-                    Calendar.current.dateComponents([.day], from: Date(), to: $0).day
-                  }
-                  if (d ?? 1) < 0 { toRemove.append(item) }
+                // Collect expired items that will be removed, for cancellation
+                var toRemove: [FoodItem] = []
+                for idx in state.places.indices {
+                    for item in state.places[idx].items {
+                        let d = item.expirationDate.flatMap {
+                            Calendar.current.dateComponents([.day], from: Date(), to: $0).day
+                        }
+                        if (d ?? 1) < 0 { toRemove.append(item) }
+                    }
                 }
-              }
-
-              // Remove them
-              for idx in state.places.indices {
-                state.places[idx].items.removeAll { item in
-                  let d = item.expirationDate.flatMap {
-                    Calendar.current.dateComponents([.day], from: Date(), to: $0).day
-                  }
-                  return (d ?? 1) < 0
+                
+                // Remove them
+                for idx in state.places.indices {
+                    state.places[idx].items.removeAll { item in
+                        let d = item.expirationDate.flatMap {
+                            Calendar.current.dateComponents([.day], from: Date(), to: $0).day
+                        }
+                        return (d ?? 1) < 0
+                    }
                 }
-              }
-
-              state.path.pop(from: elementID)
-              sortPlaces(&state.places)
-              let snapshot = Array(state.places)
-
-              return .run { [notifications, toRemove, snapshot] _ in
-                // Cancel pending notifs for removed (expired) items
-                let ids = toRemove.flatMap { [NotifID.pre($0.id), NotifID.exp($0.id)] }
-                await notifications.cancel(ids)
-                try await db.replaceAll(snapshot)
-              }
+                
+                state.path.pop(from: elementID)
+                sortPlaces(&state.places)
+                let snapshot = Array(state.places)
+                
+                return .run { [notifications, toRemove, snapshot] _ in
+                    // Cancel pending notifs for removed (expired) items
+                    let ids = toRemove.flatMap { [NotifID.pre($0.id), NotifID.exp($0.id)] }
+                    await notifications.cancel(ids)
+                    try await db.replaceAll(snapshot)
+                }
                 
             case .path:
                 return .none
@@ -249,14 +271,17 @@ struct PlacesFeature {
         enum State: Equatable {
             case place(PlaceFeature.State)
             case expiration(ExpirationFeature.State)
+            case shoppingList(ShoppingListFeature.State)
         }
         enum Action: Equatable {
             case place(PlaceFeature.Action)
             case expiration(ExpirationFeature.Action)
+            case shoppingList(ShoppingListFeature.Action)
         }
         var body: some ReducerOf<Self> {
             Scope(state: \.place, action: \.place) { PlaceFeature() }
             Scope(state: \.expiration, action: \.expiration) { ExpirationFeature() }
+            Scope(state: \.shoppingList, action: \.shoppingList) { ShoppingListFeature() }
         }
     }
     
@@ -269,12 +294,12 @@ struct PlacesFeature {
     }
     
     private func persistSnapshotIfReady(_ state: State, db: DBClient) -> Effect<Action> {
-      let snapshot = Array(state.places)
-      let canPersist = state.hasLoaded || !snapshot.isEmpty   // allow intentional “delete all” after load
-      return .run { _ in
-        if canPersist { try await db.replaceAll(snapshot) }
-        else { print("⏭️ persist skipped before initial load") }
-      }
+        let snapshot = Array(state.places)
+        let canPersist = state.hasLoaded || !snapshot.isEmpty   // allow intentional “delete all” after load
+        return .run { _ in
+            if canPersist { try await db.replaceAll(snapshot) }
+            else { print("persist skipped before initial load") }
+        }
     }
     
 }

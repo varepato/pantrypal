@@ -51,7 +51,11 @@ struct PlaceFeature {
         case cleanUpExpiredTapped
         
         // Lets child notify parent so the main list stays in sync.
-        enum Delegate: Equatable { case updated(State) }
+        enum Delegate: Equatable {
+            case updated(State)
+            case depleted(name: String, id: UUID, placeID: UUID)
+            case expiredCleaned(items: [FoodItem], placeID: UUID)
+        }
         case delegate(Delegate)
     }
     
@@ -66,22 +70,22 @@ struct PlaceFeature {
             
             switch action {
             case .cleanUpExpiredTapped:
-                // Collect expired item IDs
-                let expiredIDs = state.items
-                    .filter { isExpired($0.expirationDate) }
-                    .map(\.id)
+                let expiredItemsIA = state.items.filter { isExpired($0.expirationDate) }
+                let expiredItems: [FoodItem] = Array(expiredItemsIA)
+                let expiredIDs = expiredItems.map(\.id)
 
                 guard !expiredIDs.isEmpty else { return .none }
-
+                
                 // Remove from state
                 for id in expiredIDs { _ = state.items.remove(id: id) }
-
+                
                 // Cancel notifications for those items
                 let notifIDs = expiredIDs.map { "item-\($0.uuidString)" }
-
-                return .merge(
-                    .send(.delegate(.updated(state))),
-                    .run { _ in await notifications.cancel(notifIDs) }
+                
+                return .concatenate(
+                    .send(.delegate(.expiredCleaned(items: expiredItems, placeID: state.id))),
+                    .run { _ in await notifications.cancel(notifIDs) },
+                    .send(.delegate(.updated(state)))
                 )
             case .addItemButtonTapped:
                 state.isAddingItem = true
@@ -177,11 +181,13 @@ struct PlaceFeature {
                 
                 if clamped == 0 {
                     // Remove the item and cancel any scheduled reminder for it
+                    let name = item.name
                     _ = state.items.remove(id: id)
                     let notifId = "item-\(id.uuidString)"
-                    return .merge(
-                        .send(.delegate(.updated(state))),
-                        .run { _ in await notifications.cancel([notifId]) }
+                    return .concatenate(
+                        .send(.delegate(.depleted(name: name, id: id, placeID: state.id))),
+                        .run { _ in await notifications.cancel([notifId]) },
+                        .send(.delegate(.updated(state)))
                     )
                 } else {
                     item.quantity = clamped

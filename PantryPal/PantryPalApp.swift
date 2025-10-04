@@ -18,7 +18,7 @@ struct PantryApp: App {
     var body: some Scene {
         WindowGroup { RootView() }
         // Register SwiftData models
-            .modelContainer(for: [PlaceStore.self, FoodItemStore.self])
+            .modelContainer(for: [PlaceStore.self, FoodItemStore.self, ShoppingListItemStore.self])
     }
 }
 

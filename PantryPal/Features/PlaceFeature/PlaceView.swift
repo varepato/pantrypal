@@ -135,7 +135,7 @@ private struct FoodItemRow: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
                 // Name + quantity inline
-                HStack(spacing: 8) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(item.name).font(.headline)
                     Text("• \(item.quantity)")
                         .font(.subheadline)

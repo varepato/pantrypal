@@ -96,11 +96,18 @@ struct PlacesView: View {
                 .padding(.bottom, 8)   // space above the home indicator
                 .background(.clear)
             }
-
             .navigationTitle("Pantry Neat")
+            .toolbar {
+              ToolbarItem(placement: .topBarTrailing) {
+                CartBadgeButton(count: store.shoppingBadge) {
+                  store.send(.shoppingButtonTapped)
+                }
+              }
+            }
             .task {
                 store.send(.loadRequested)
                 store.send(.requestNotificationPermission)
+                store.send(.refreshShoppingBadge)
             }
         } destination: { state in
             switch state {
@@ -113,6 +120,11 @@ struct PlacesView: View {
               CaseLet(/PlacesFeature.Path.State.expiration,
                       action: PlacesFeature.Path.Action.expiration) { store in
                 ExpirationView(store: store)
+              }
+            case .shoppingList:
+              CaseLet(/PlacesFeature.Path.State.shoppingList,
+                      action: PlacesFeature.Path.Action.shoppingList) { store in
+                ShoppingListView(store: store)
               }
             }
         }
@@ -128,3 +140,23 @@ struct PlacesView: View {
     }
 }
 
+private struct CartBadgeButton: View {
+  let count: Int
+  let tap: () -> Void
+  var body: some View {
+    Button(action: tap) {
+      ZStack(alignment: .topTrailing) {
+        Image(systemName: "cart")
+        if count > 0 {
+          Text("\(min(99, count))")
+            .font(.caption2).bold()
+            .padding(4)
+            .background(Circle().fill(Color.red))
+            .foregroundStyle(.white)
+            .offset(x: 8, y: -8)
+        }
+      }
+      .accessibilityLabel("Shopping List, \(count) items")
+    }
+  }
+}

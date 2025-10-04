@@ -38,6 +38,8 @@
 		1ADEB0262E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
 		1ADEB0272E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */; };
 		1ADEB0292E7387A2000D4B6F /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */; };
+		1AE7767A2E8EECB50035A1F4 /* ShoppingListFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE776792E8EECAF0035A1F4 /* ShoppingListFeature.swift */; };
+		1AE7767C2E8EECC60035A1F4 /* ShoppingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE7767B2E8EECC20035A1F4 /* ShoppingListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,8 @@
 		1ADEB0202E737E5B000D4B6F /* MiniExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MiniExtension.entitlements; sourceTree = "<group>"; };
 		1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
 		1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
+		1AE776792E8EECAF0035A1F4 /* ShoppingListFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListFeature.swift; sourceTree = "<group>"; };
+		1AE7767B2E8EECC20035A1F4 /* ShoppingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -166,6 +170,7 @@
 		1A0889EA2E6BC86200DE458B /* Clients */ = {
 			isa = PBXGroup;
 			children = (
+				1AB983FC2E8DE43A00458600 /* Background */,
 				1ADEB0282E738798000D4B6F /* WidgetDataWriter.swift */,
 				1A0889E82E6B587800DE458B /* NotificationClient.swift */,
 				1A07860C2E6A280D008B50DE /* DBClient.swift */,
@@ -186,7 +191,7 @@
 		1A0889ED2E6BC8AD00DE458B /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				1AB983FC2E8DE43A00458600 /* Background */,
+				1AE776782E8EEC950035A1F4 /* ShoppingListFeature */,
 				1ADEB02C2E750CDA000D4B6F /* PlaceFeature */,
 				1A6377EC2E6CF30200C6AAA2 /* MainPageFeature */,
 				1A0889F82E6BD95200DE458B /* Expiration */,
@@ -305,6 +310,15 @@
 				1A0786002E6871D7008B50DE /* PlaceFeature.swift */,
 			);
 			path = PlaceFeature;
+			sourceTree = "<group>";
+		};
+		1AE776782E8EEC950035A1F4 /* ShoppingListFeature */ = {
+			isa = PBXGroup;
+			children = (
+				1AE7767B2E8EECC20035A1F4 /* ShoppingListView.swift */,
+				1AE776792E8EECAF0035A1F4 /* ShoppingListFeature.swift */,
+			);
+			path = ShoppingListFeature;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -482,6 +496,7 @@
 				1A0786032E68726E008B50DE /* PlaceView.swift in Sources */,
 				1A0786012E6871DC008B50DE /* PlaceFeature.swift in Sources */,
 				1AB983FE2E8DE44D00458600 /* BackgroundRefresh.swift in Sources */,
+				1AE7767A2E8EECB50035A1F4 /* ShoppingListFeature.swift in Sources */,
 				1A07860B2E6A26A8008B50DE /* PersistenceModels.swift in Sources */,
 				1A0786092E68BAAA008B50DE /* AddFoodItemView.swift in Sources */,
 				1ADEB0252E7385A5000D4B6F /* WidgetSnapshot.swift in Sources */,
@@ -492,6 +507,7 @@
 				1A0785FF2E687097008B50DE /* Domain.swift in Sources */,
 				1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */,
 				1A0889EF2E6BCC7000DE458B /* ExpirationLogic.swift in Sources */,
+				1AE7767C2E8EECC60035A1F4 /* ShoppingListView.swift in Sources */,
 				1A0889F42E6BD5F200DE458B /* ExpirationFeature.swift in Sources */,
 				1A0786072E6872BC008B50DE /* PlacesView.swift in Sources */,
 				1A0786052E687299008B50DE /* PlacesFeature.swift in Sources */,

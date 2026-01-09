@@ -80,7 +80,9 @@ struct PlacesView: View {
                             onTap: { place in store.path.append(.place(place)) },
                             onDelete: { id in if let i = store.places.firstIndex(where: { $0.id == id }) {
                                 store.send(.deletePlaces(IndexSet(integer: i)))
-                            }}
+                            }},
+                            shoppingCount: store.shoppingBadge,
+                            onShoppingTap: { store.send(.shoppingButtonTapped) },
                         )
                     }
                 }
@@ -98,11 +100,7 @@ struct PlacesView: View {
             }
             .navigationTitle("Pantry Neat")
             .toolbar {
-              ToolbarItem(placement: .topBarTrailing) {
-                CartBadgeButton(count: store.shoppingBadge) {
-                  store.send(.shoppingButtonTapped)
-                }
-              }
+                
             }
             .task {
                 store.send(.loadRequested)
@@ -140,23 +138,3 @@ struct PlacesView: View {
     }
 }
 
-private struct CartBadgeButton: View {
-  let count: Int
-  let tap: () -> Void
-  var body: some View {
-    Button(action: tap) {
-      ZStack(alignment: .topTrailing) {
-        Image(systemName: "cart")
-        if count > 0 {
-          Text("\(min(99, count))")
-            .font(.caption2).bold()
-            .padding(4)
-            .background(Circle().fill(Color.red))
-            .foregroundStyle(.white)
-            .offset(x: 8, y: -8)
-        }
-      }
-      .accessibilityLabel("Shopping List, \(count) items")
-    }
-  }
-}

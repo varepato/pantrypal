@@ -45,25 +45,9 @@ struct ShoppingListFeature: Reducer {
               state.items.remove(atOffsets: indexSet)
               return .run { _ in try await db.deleteShoppingItems(ids) }
 
-            case .addSheet:
-                return .none
             case .addButtonTapped:
                 state.addSheet = .init()
                 return .none
-            case .addSheet(.presented(.confirm(let name, let qty))):
-                // create/merge then reload
-                state.addSheet = nil 
-                return .run { send in
-                    _ = try await db.mergeOrCreateShoppingItem(name, max(1, qty), .manual, nil, nil)
-                    await send(.onAppear) // simple reload
-                }
-            case .addSheet(.presented(.cancel)):
-              state.addSheet = nil
-              return .none
-
-            case .addSheet(.dismiss):
-              state.addSheet = nil
-              return .none
                 
             case .onAppear:
                 guard !state.isLoading else { return .none }
@@ -87,6 +71,25 @@ struct ShoppingListFeature: Reducer {
                 state.isLoading = false
                 state.error = message
                 return .none
+                
+            case .addSheet(.presented(.confirm(let name, let qty))):
+                state.addSheet = nil
+                return .run { send in
+                    _ = try await db.mergeOrCreateShoppingItem(name, max(1, qty), .manual, nil, nil)
+                    await send(.onAppear)
+                }
+
+            case .addSheet(.presented(.cancel)):
+                state.addSheet = nil
+                return .none
+
+            case .addSheet(.dismiss):
+                state.addSheet = nil
+                return .none
+
+            case .addSheet:
+                return .none
+            
             }
         }.ifLet(\.$addSheet, action: /Action.addSheet) { AddSheet() }
     }
@@ -95,14 +98,32 @@ struct ShoppingListFeature: Reducer {
 extension ShoppingListFeature {
     struct AddSheet: Reducer {
         struct State: Equatable { var name = ""; var qty = 1 }
+
         enum Action: Equatable {
             case setName(String)
             case setQty(Int)
             case confirm(String, Int)
             case cancel
         }
-        var body: some ReducerOf<Self> { Reduce { _, _ in .none } }
+
+        var body: some ReducerOf<Self> {
+            Reduce { state, action in
+                switch action {
+                case let .setName(name):
+                    state.name = name
+                    return .none
+
+                case let .setQty(qty):
+                    state.qty = max(1, qty)
+                    return .none
+
+                case .confirm, .cancel:
+                    return .none
+                }
+            }
+        }
     }
 }
+
 
 

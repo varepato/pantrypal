@@ -96,6 +96,8 @@ struct PlacesGrid: View {
     let places: [PlaceFeature.State]
     let onTap: (PlaceFeature.State) -> Void
     let onDelete: (PlaceFeature.State.ID) -> Void
+    let shoppingCount: Int
+    let onShoppingTap: () -> Void
     
     // explicit columns to help the type-checker
     private let columns: [GridItem] = [
@@ -106,6 +108,7 @@ struct PlacesGrid: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
+                ShoppingListCard(count: shoppingCount, colorHex: "any", onTap: onShoppingTap)
                 ForEach(places, id: \.id) { place in
                     let hasExpired = place.items.elements.contains { ($0.daysUntilExpiry ?? 1) < 0 }
                     let hasExpiringSoon = place.items.elements.contains { isExpiringSoon($0.expirationDate, within: 3) }
@@ -309,3 +312,65 @@ struct AddFAB: View {
     }
 }
 
+struct CartBadgeButton: View {
+  let count: Int
+  let tap: () -> Void
+  var body: some View {
+    Button(action: tap) {
+      ZStack(alignment: .topTrailing) {
+        Image(systemName: "cart")
+        if count > 0 {
+          Text("\(min(99, count))")
+            .font(.caption2).bold()
+            .padding(4)
+            .background(Circle().fill(Color.red))
+            .foregroundStyle(.white)
+            .offset(x: 8, y: -8)
+        }
+      }
+      .accessibilityLabel("Shopping List, \(count) items")
+    }
+  }
+}
+
+struct ShoppingListCard: View {
+    let count: Int
+    let colorHex: String
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                Image(systemName: "cart")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .padding(.top, 12)
+                    .foregroundStyle(Color(hex: colorHex))
+
+                Text("Shopping List")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+
+                Text("\(count) items")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, 12)
+            }
+            .frame(maxWidth: .infinity, minHeight: 120) // same height
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(hex: colorHex).opacity(0.15)) // same soft tint
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color(hex: colorHex), lineWidth: 1) // same stroke
+                    )
+            )
+        }
+        .padding(2)           // same outer padding
+        .buttonStyle(.plain)
+        .accessibilityLabel("Shopping List, \(count) items")
+    }
+}

@@ -29,6 +29,10 @@
 		1A255E032E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */; };
 		1A255E122E65EC4C005BA185 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 1A255E112E65EC4C005BA185 /* ComposableArchitecture */; };
 		1A6377EE2E6CF32C00C6AAA2 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */; };
+		1AA461852F11C4BB001A8065 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1AA461842F11C4B5001A8065 /* README.md */; };
+		1AA461862F11C4BB001A8065 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1AA461842F11C4B5001A8065 /* README.md */; };
+		1AA461872F11C4BB001A8065 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1AA461842F11C4B5001A8065 /* README.md */; };
+		1AA461882F11C4BB001A8065 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1AA461842F11C4B5001A8065 /* README.md */; };
 		1AB983FE2E8DE44D00458600 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB983FD2E8DE44200458600 /* BackgroundRefresh.swift */; };
 		1ADEB0022E7373B9000D4B6F /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0012E7373B9000D4B6F /* WidgetKit.framework */; };
 		1ADEB0042E7373B9000D4B6F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB0032E7373B9000D4B6F /* SwiftUI.framework */; };
@@ -105,6 +109,7 @@
 		1A255E002E65E9C9005BA185 /* PantryPalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITests.swift; sourceTree = "<group>"; };
 		1A255E022E65E9C9005BA185 /* PantryPalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryPalUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1A6377ED2E6CF31C00C6AAA2 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		1AA461842F11C4B5001A8065 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1AB983FB2E8DE22F00458600 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1AB983FD2E8DE44200458600 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
 		1ADEB0002E7373B9000D4B6F /* MiniExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MiniExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -212,6 +217,7 @@
 		1A255DD72E65E9C7005BA185 = {
 			isa = PBXGroup;
 			children = (
+				1AA461842F11C4B5001A8065 /* README.md */,
 				1ADEB0212E7383EC000D4B6F /* WidgetSnapshot.swift */,
 				1ADEB0202E737E5B000D4B6F /* MiniExtension.entitlements */,
 				1A255DE22E65E9C7005BA185 /* PantryPal */,
@@ -459,6 +465,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AA461852F11C4BB001A8065 /* README.md in Resources */,
 				1A255DED2E65E9C9005BA185 /* Preview Assets.xcassets in Resources */,
 				1A255DEA2E65E9C9005BA185 /* Assets.xcassets in Resources */,
 			);
@@ -468,6 +475,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AA461872F11C4BB001A8065 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +483,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AA461882F11C4BB001A8065 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +491,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AA461862F11C4BB001A8065 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
